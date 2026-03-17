@@ -34,10 +34,11 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, []);
 
   const getOutputLanguageInstruction = useCallback((): string => {
-    if (outputLanguage === 'en') return '\n\nIMPORTANT: Generate all output text in English.';
-    if (outputLanguage === 'it') return '\n\nIMPORTANT: Generate all output text in Italian (Italiano).';
+    const effectiveLang = outputLanguage === 'auto' ? language : outputLanguage;
+    if (effectiveLang === 'en') return '\n\nIMPORTANT: Generate all output text (including questions, options, attribute names, entity names, descriptions, and values) in English.';
+    if (effectiveLang === 'it') return '\n\nIMPORTANT: Generate all output text (including questions, options, attribute names, entity names, descriptions, and values) in Italian (Italiano).';
     return '';
-  }, [outputLanguage]);
+  }, [outputLanguage, language]);
 
   const t = translations[language];
 

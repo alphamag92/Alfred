@@ -116,7 +116,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
           );
           setResults(prev => prev.map(r =>
             r.market === market
-              ? { ...r, loading: false, image, error: image ? null : 'No image returned' }
+              ? { ...r, loading: false, image, error: image ? null : t.alNoImageReturned }
               : r
           ));
         } catch (err: any) {
@@ -189,7 +189,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
           {/* Step 1: Upload */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
-              1. Upload Your Ad
+              {t.alUploadYourAd}
             </label>
             {uploadedReference ? (
               <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
@@ -211,7 +211,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
                 className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-zinc-500 dark:hover:border-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors"
               >
                 <Upload className="w-7 h-7 text-zinc-400 mb-2" />
-                <span className="text-sm text-zinc-500 dark:text-zinc-400">Click to upload your ad image</span>
+                <span className="text-sm text-zinc-500 dark:text-zinc-400">{t.alClickToUpload}</span>
                 <input
                   id="ad-upload-alfred"
                   ref={fileInputRef}
@@ -223,14 +223,14 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
               </label>
             )}
             <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-2">
-              By using this feature, you confirm that you have the necessary rights to any content that you upload.
+              {t.alRightsDisclaimer}
             </p>
           </div>
 
           {/* Step 2: Target Markets */}
           <div className="relative">
             <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
-              2. Target Market (Countries)
+              {t.alTargetMarket}
             </label>
 
             {selectedMarkets.length > 0 && (
@@ -263,7 +263,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
               <input
                 type="text"
                 className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-xl px-3 py-2.5 text-sm text-zinc-900 dark:text-zinc-50 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 transition-all"
-                placeholder="Type to search countries..."
+                placeholder={t.alSearchCountries}
                 value={countrySearch}
                 onChange={(e) => {
                   setCountrySearch(e.target.value);
@@ -314,7 +314,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
                       {country}
                     </button>
                   )) : (
-                    <div className="px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">No matching countries</div>
+                    <div className="px-4 py-2 text-sm text-zinc-500 dark:text-zinc-400">{t.alNoMatchingCountries}</div>
                   )}
                 </div>
               )}
@@ -324,7 +324,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
           {/* Step 3: Target Languages */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
-              3. Target Languages
+              {t.alTargetLanguages}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {LANGUAGES.map(lang => (
@@ -356,7 +356,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
           {/* Step 4: Aspect Ratio */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-3">
-              4. Aspect Ratio
+              {t.alAspectRatio}
             </label>
             <div className="flex flex-wrap gap-2">
               {ASPECT_RATIOS.map(ar => (
@@ -382,7 +382,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
             className="w-full py-3 bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:pointer-events-none text-white dark:text-zinc-900 font-semibold text-sm rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 min-h-[44px]"
           >
             {isGenerating ? <Loader2 className="animate-spin w-5 h-5" /> : <Globe className="w-5 h-5" />}
-            <span>{isGenerating ? 'Localizing...' : 'Localize Ad'}</span>
+            <span>{isGenerating ? t.alLocalizing : t.alLocalizeAd}</span>
           </button>
         </div>
       </div>
@@ -393,25 +393,25 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
           <>
             <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Localized Results ({results.filter(r => r.image).length}/{results.length})
+                {t.alLocalizedResults(results.filter(r => r.image).length, results.length)}
               </h3>
               <div className="flex gap-2">
                 <button
                   onClick={handleExportAll}
                   disabled={!results.some(r => r.image)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors disabled:opacity-50 disabled:pointer-events-none"
-                  title="Export All"
+                  title={t.alExportAll}
                 >
                   <Download className="w-3.5 h-3.5" />
-                  Export All
+                  {t.alExportAll}
                 </button>
                 <button
                   onClick={handleReset}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                  title="New Campaign"
+                  title={t.alReset}
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  Reset
+                  {t.alReset}
                 </button>
               </div>
             </div>
@@ -434,7 +434,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
                   {res.loading ? (
                     <div className="aspect-video flex flex-col items-center justify-center text-zinc-400 gap-3">
                       <Loader2 className="w-7 h-7 animate-spin" />
-                      <span className="text-xs uppercase tracking-widest font-bold">Localizing...</span>
+                      <span className="text-xs uppercase tracking-widest font-bold">{t.alLocalizing}</span>
                     </div>
                   ) : res.image ? (
                     <img
@@ -444,7 +444,7 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
                     />
                   ) : (
                     <div className="aspect-video flex items-center justify-center text-red-500 dark:text-red-400 text-sm font-medium px-4 text-center">
-                      {res.error || `Failed to generate for ${res.market}`}
+                      {res.error || t.alFailedForMarket(res.market)}
                     </div>
                   )}
                 </div>
@@ -457,9 +457,9 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
               <div className="w-16 h-16 mx-auto border border-zinc-200 dark:border-zinc-700 rounded-full flex items-center justify-center mb-6">
                 <ImageIcon className="w-7 h-7 text-zinc-400 dark:text-zinc-500" />
               </div>
-              <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Ready to Scale</h3>
+              <h3 className="text-base font-semibold text-zinc-800 dark:text-zinc-200 mb-2">{t.alReadyToScale}</h3>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Upload your ad, select target markets or languages, then click Localize to generate localized versions instantly.
+                {t.alReadyDesc}
               </p>
             </div>
           </div>
