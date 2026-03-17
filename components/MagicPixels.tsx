@@ -674,10 +674,12 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
     return (
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto lg:overflow-hidden">
         {/* Image area */}
-        <div className="flex-1 min-h-0 lg:min-w-0 flex items-center justify-center p-2 sm:p-4 lg:p-5 bg-zinc-100 dark:bg-zinc-950">
+        <div className="shrink-0 lg:shrink lg:flex-1 min-h-0 lg:min-w-0 flex items-center justify-center p-2 sm:p-4 lg:p-5 bg-zinc-100 dark:bg-zinc-950">
           <div
             ref={imageContainerRef}
-            className={`relative max-h-full max-w-full inline-block select-none touch-none ${
+            className={`relative max-h-full max-w-full inline-block select-none ${
+              (editMode === 'crop' || editMode === 'retouch') ? 'touch-none' : ''
+            } ${
               editMode === 'retouch' ? 'cursor-crosshair' : editMode === 'crop' ? 'cursor-crosshair' : 'cursor-default'
             }`}
             onClick={handleImageClick}
@@ -697,7 +699,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
             <img
               src={currentImage!}
               alt="Editing canvas"
-              className="max-w-full max-h-[50vh] sm:max-h-[55vh] lg:max-h-[75vh] object-contain rounded-lg shadow-lg block pointer-events-none"
+              className="max-w-full max-h-[40vh] sm:max-h-[45vh] lg:max-h-[75vh] object-contain rounded-lg shadow-lg block pointer-events-none"
               draggable={false}
             />
 
@@ -747,7 +749,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
         </div>
 
         {/* Side panel */}
-        <div className="w-full lg:w-72 xl:w-80 flex flex-col border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0 lg:min-h-0">
+        <div className="w-full lg:w-72 xl:w-80 flex flex-col border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0 lg:shrink lg:min-h-0">
           {/* Mode tabs */}
           <div className="flex border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
             {tabs.map(tab => (
