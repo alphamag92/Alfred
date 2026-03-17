@@ -3,19 +3,34 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLanguage } from '../i18n/LanguageContext';
+import { Language } from '../i18n/translations';
 
 interface HeaderProps {
     isDarkMode: boolean;
     toggleDarkMode: () => void;
-    onShowInfo: () => void;
     onSelectKey: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onShowInfo, onSelectKey }) => {
+const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey }) => {
+  const { language, setLanguage, t, outputLanguage, setOutputLanguage } = useLanguage();
+  const [showLangMenu, setShowLangMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowLangMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
     <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">Proactive Co-Creator</h1>
+      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
       <div className="flex items-center gap-2">
         <button
           onClick={onSelectKey}
@@ -25,21 +40,73 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onShowInfo,
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
           </svg>
-          API Key
+          {t.apiKey}
         </button>
-        <button
-          onClick={onShowInfo}
-          className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
-          title="About & Feedback"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </button>
+
+        {/* Language Selector */}
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowLangMenu(!showLangMenu)}
+            className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 flex items-center gap-1.5"
+            title={t.language}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <span className="text-xs font-bold uppercase">{language}</span>
+          </button>
+
+          {showLangMenu && (
+            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-xl z-[100] overflow-hidden">
+              {/* UI Language */}
+              <div className="px-3 pt-3 pb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{t.language} UI</span>
+              </div>
+              <div className="px-2 pb-2 flex gap-1">
+                {(['en', 'it'] as Language[]).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => { setLanguage(lang); }}
+                    className={`flex-1 text-sm py-1.5 px-3 rounded-lg font-medium transition-colors ${
+                      language === lang
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                    }`}
+                  >
+                    {lang === 'en' ? 'English' : 'Italiano'}
+                  </button>
+                ))}
+              </div>
+
+              <div className="border-t border-zinc-100 dark:border-zinc-800" />
+
+              {/* Output Language */}
+              <div className="px-3 pt-3 pb-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{t.outputLanguage}</span>
+              </div>
+              <div className="px-2 pb-3 flex gap-1">
+                {(['auto', 'en', 'it'] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => { setOutputLanguage(lang); }}
+                    className={`flex-1 text-xs py-1.5 px-2 rounded-lg font-medium transition-colors ${
+                      outputLanguage === lang
+                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                    }`}
+                  >
+                    {lang === 'auto' ? t.outputLangAuto : lang === 'en' ? t.outputLangEn : t.outputLangIt}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         <button
           onClick={toggleDarkMode}
           className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
-          title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          title={isDarkMode ? t.switchToLight : t.switchToDark}
         >
           {isDarkMode ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

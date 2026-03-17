@@ -86,7 +86,7 @@ const withRetry = async <T>(
 /**
  * Generates the complete Belief Graph including Entities, Relationships, AND Rich Attributes in a single pass.
  */
-export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null): Promise<BeliefState> => {
+export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<BeliefState> => {
     console.log(`Generating Full Belief Graph (Structure + Attributes) for ${mode}:`, prompt);
 
     let specificInstructions = "";
@@ -130,6 +130,7 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
     - Provide a label and alternatives (as strings).
 
     Input: { "prompt": "${prompt}" }
+    ${langInstruction || ''}
     OUTPUT JSON:`;
 
     // Optimization: Request arrays of strings instead of arrays of objects for values/alternatives to reduce token count.
@@ -220,7 +221,7 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
     }
 };
 
-export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null): Promise<Clarification[]> => {
+export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<Clarification[]> => {
     console.log(`Generating clarifications for ${mode} mode from prompt:`, prompt);
     
     const imagePrompt = `You are an expert in text-to-image prompting. Your goal is to help a user refine their prompt by asking clarifying questions.
@@ -268,7 +269,7 @@ Follow these instructions EXACTLY:
 
 User Prompt: "${prompt}"
 
-Return the output as a JSON array of objects, where each object has a 'question' and an 'options' array.`;
+Return the output as a JSON array of objects, where each object has a 'question' and an 'options' array.${langInstruction || ''}`;
 
     const contents = image ? {
         parts: [
@@ -563,12 +564,12 @@ export const generateVideosFromPrompt = async (prompt: string, onStatusUpdate?: 
     }
 };
 
-export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null): Promise<string> => {
+export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<string> => {
     console.log("Generating story for prompt:", prompt);
     const storyGenerationPrompt = `Based on the following idea ${image ? 'and the provided image ' : ''}, write a short, creative story. The story should be engaging and well-structured.
-    
+
     Idea: "${prompt}"
-    
+    ${langInstruction || ''}
     Story:`;
 
     const contents = image ? {

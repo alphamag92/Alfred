@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Clarification } from '../types';
+import { useLanguage } from '../i18n/LanguageContext';
 
 interface ClarificationCardProps {
   clarifications: Clarification[];
@@ -17,38 +18,32 @@ interface ClarificationCardProps {
 
 // --- Thinking Process Component ---
 const ThinkingProcess = ({ prompt = "" }: { prompt: string }) => {
+    const { t } = useLanguage();
     const [step, setStep] = useState(0);
 
     const steps = useMemo(() => {
-        const baseSteps = [
-            "Analyzing prompt for ambiguities...",
-            "Identifying vague attributes...",
-            "Detecting implicit entities...",
-            "Evaluating semantic uncertainties...",
-            "Drafting clarification questions...",
-        ];
-        
-        // Context detection for more specific steps
+        const baseSteps = [...t.thinkingSteps];
+
         if (prompt && prompt.length > 0) {
             const lowerPrompt = prompt.toLowerCase();
-            if (lowerPrompt.includes("image") || lowerPrompt.includes("picture") || lowerPrompt.includes("scene")) {
-                 baseSteps.splice(1, 0, "Scanning visual descriptors...");
+            if (lowerPrompt.includes("image") || lowerPrompt.includes("picture") || lowerPrompt.includes("scene") || lowerPrompt.includes("immagine") || lowerPrompt.includes("foto")) {
+                 baseSteps.splice(1, 0, t.thinkingVisual);
             }
-            if (lowerPrompt.includes("story") || lowerPrompt.includes("narrative") || lowerPrompt.includes("write")) {
-                 baseSteps.splice(1, 0, "Evaluating narrative gaps...");
+            if (lowerPrompt.includes("story") || lowerPrompt.includes("narrative") || lowerPrompt.includes("write") || lowerPrompt.includes("storia") || lowerPrompt.includes("racconto")) {
+                 baseSteps.splice(1, 0, t.thinkingNarrative);
             }
-            if (lowerPrompt.includes("video") || lowerPrompt.includes("movie")) {
-                baseSteps.splice(1, 0, "Checking temporal dynamics...");
+            if (lowerPrompt.includes("video") || lowerPrompt.includes("movie") || lowerPrompt.includes("film")) {
+                baseSteps.splice(1, 0, t.thinkingTemporal);
             }
         }
-        
+
         return baseSteps;
-    }, [prompt]);
+    }, [prompt, t]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             setStep((s) => (s + 1) % steps.length);
-        }, 2200); // 2.2 seconds per step
+        }, 2200);
         return () => clearInterval(interval);
     }, [steps]);
 
@@ -59,14 +54,15 @@ const ThinkingProcess = ({ prompt = "" }: { prompt: string }) => {
     );
 };
 
-const ClarificationCard: React.FC<ClarificationCardProps> = ({ 
-    clarifications, 
+const ClarificationCard: React.FC<ClarificationCardProps> = ({
+    clarifications,
     onRefresh,
     isLoading,
     pendingAnswers,
     setPendingAnswers,
     prompt = ""
 }) => {
+  const { t } = useLanguage();
 
   const handleSelectOption = (question: string, option: string) => {
       setPendingAnswers(prev => ({ ...prev, [question]: option }));
@@ -82,7 +78,7 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
 
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 transition-colors duration-200 h-full flex flex-col shadow-sm overflow-hidden relative">
-      
+
       {isLoading && (
         <div className="absolute inset-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-2xl transition-opacity duration-300">
             <div className="flex flex-col items-center p-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-lg border border-zinc-100 dark:border-zinc-800 max-w-sm w-full mx-4">
@@ -105,13 +101,12 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                     </svg>
-                    <p className="text-sm font-medium">Clarifying questions will appear here after generation.</p>
+                    <p className="text-sm font-medium">{t.clarificationPlaceholder}</p>
                 </div>
             </div>
         ) : (
             <div className="flex flex-col h-full min-h-0">
                 <div className="space-y-6 flex-grow overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-700">
-                    {/* Render skeletons if loading (visible faintly behind overlay), or actual content */}
                     {isLoading && clarifications.length === 0 ? (
                          [1, 2, 3].map(i => (
                              <div key={i} className="bg-zinc-50 dark:bg-zinc-950/50 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
@@ -147,7 +142,7 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                                     type="text"
                                     value={pendingAnswers[item.question] && !item.options.includes(pendingAnswers[item.question]) ? pendingAnswers[item.question] : ''}
                                     onChange={(e) => handleCustomAnswerChange(item.question, e.target.value)}
-                                    placeholder="Or type answer..."
+                                    placeholder={t.orTypeAnswer}
                                     disabled={isLoading}
                                     className="w-full text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 bg-zinc-50 dark:bg-zinc-950/50 focus:bg-white dark:focus:bg-zinc-900 text-zinc-800 dark:text-zinc-200 transition-all"
                                 />
@@ -155,21 +150,21 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                         ))
                     )}
                 </div>
-                
+
                 {clarifications.length > 0 && (
                     <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col sm:flex-row justify-between items-center gap-3 flex-shrink-0 z-10">
-                        <button 
+                        <button
                             onClick={onRefresh}
                             disabled={isLoading}
                             className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-xl text-sm font-medium transition-all border border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                            title="Get different questions"
+                            title={t.refreshQuestions}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            Refresh Questions
+                            {t.refreshQuestions}
                         </button>
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400 italic text-center sm:text-right">Click "Update Prompt" to apply.</span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 italic text-center sm:text-right">{t.clickUpdateToApply}</span>
                     </div>
                 )}
             </div>
