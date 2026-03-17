@@ -63,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
           onClick={() => handleNavClick('localize')}
           className={`relative flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 ${
             activeNav === 'localize'
-              ? 'bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-md scale-[1.02]'
+              ? 'bg-gradient-to-r from-teal-500/10 to-emerald-500/10 dark:from-teal-500/20 dark:to-emerald-500/20 text-teal-700 dark:text-teal-300 shadow-md scale-[1.02] ring-1 ring-teal-200 dark:ring-teal-700/50'
               : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-white/50 dark:hover:bg-zinc-700/50'
           }`}
         >
