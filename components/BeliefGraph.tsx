@@ -131,7 +131,7 @@ const AttributeEditor: React.FC<AttributeEditorProps> = ({ attribute, entity, on
         const isPresent = currentValue === 'true';
         
         return (
-            <div key={attribute.name} className="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-4 items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors px-2 rounded-lg">
+            <div key={attribute.name} className="grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-3 sm:gap-4 items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors px-2 rounded-lg">
                 <label className="text-zinc-600 dark:text-zinc-400 font-medium text-xs sm:text-sm">Existence</label>
                 <div className={`flex rounded-md border overflow-hidden w-full ${isModified ? 'border-blue-500 ring-1 ring-blue-200 dark:ring-blue-900' : 'border-zinc-300 dark:border-zinc-700'}`}>
                      <button
@@ -165,7 +165,7 @@ const AttributeEditor: React.FC<AttributeEditorProps> = ({ attribute, entity, on
 
     // --- Standard Attribute Editor ---
     return (
-        <div key={attribute.name} className="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-4 items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors px-2 rounded-lg">
+        <div key={attribute.name} className="grid grid-cols-[90px_1fr] sm:grid-cols-[120px_1fr] gap-3 sm:gap-4 items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors px-2 rounded-lg">
             <label className="text-zinc-600 dark:text-zinc-400 font-medium text-xs sm:text-sm flex items-center gap-1.5 capitalize leading-tight">
                 {attribute.name.replace(/_/g, ' ')}
                 {isModified && <span className="h-2 w-2 rounded-full bg-blue-500 shadow-sm ring-1 ring-blue-200 dark:ring-blue-900 flex-shrink-0" title="Modified"></span>}
