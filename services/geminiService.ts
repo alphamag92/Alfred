@@ -606,8 +606,19 @@ export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: S
         }), 3, 1000, onStatusUpdate, "Story Generation");
         return response.text;
     } catch (error) {
-        console.error("Error generating story with Gemini:", error);
-        throw error;
+        console.warn("Story generation failed with PRO 3.1, falling back to Gemini 3.0 Flash:", error);
+        if (onStatusUpdate) onStatusUpdate("Falling back to Gemini 3.0 Flash...");
+        try {
+            const fallbackResponse = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+                model: 'gemini-3-flash-preview',
+                contents: contents,
+                config: { temperature: 0.8 }
+            }), 3, 1000, onStatusUpdate, "Story Generation (Flash fallback)");
+            return fallbackResponse.text;
+        } catch (fallbackError) {
+            console.error("Error generating story with Gemini (Flash fallback):", fallbackError);
+            throw fallbackError;
+        }
     }
 };
 
@@ -645,8 +656,19 @@ Perfect Prompt:`;
         }), 3, 1000, onStatusUpdate, "Prompt Generation");
         return response.text;
     } catch (error) {
-        console.error("Error generating perfect prompt:", error);
-        throw error;
+        console.warn("Prompt generation failed with PRO 3.1, falling back to Gemini 3.0 Flash:", error);
+        if (onStatusUpdate) onStatusUpdate("Falling back to Gemini 3.0 Flash...");
+        try {
+            const fallbackResponse = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+                model: 'gemini-3-flash-preview',
+                contents: contents,
+                config: { temperature: 0.7 }
+            }), 3, 1000, onStatusUpdate, "Prompt Generation (Flash fallback)");
+            return fallbackResponse.text;
+        } catch (fallbackError) {
+            console.error("Error generating perfect prompt (Flash fallback):", fallbackError);
+            throw fallbackError;
+        }
     }
 };
 
