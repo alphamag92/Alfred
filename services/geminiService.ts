@@ -672,6 +672,47 @@ Perfect Prompt:`;
     }
 };
 
+export const localizeAdImage = async (
+  refImageBase64: string,
+  refImageMimeType: string,
+  market: string,
+  aspectRatio: string,
+  onStatusUpdate?: StatusUpdateCallback
+): Promise<string | null> => {
+  const response = await withRetry<GenerateContentResponse>(
+    () => ai.models.generateContent({
+      model: 'gemini-3.1-flash-image-preview',
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType: refImageMimeType,
+              data: refImageBase64,
+            },
+          },
+          {
+            text: `Translate all text in this advertisement image to ${market} (if it's a country, use its primary language). ONLY translate the text - do not add any cultural imagery, flags, national symbols, or stereotypical visual elements. Keep the image, composition, styling, colors, and all visual elements exactly the same as the original. The only change should be the language of the text.`,
+          },
+        ],
+      },
+      config: {
+        responseModalities: [Modality.IMAGE, Modality.TEXT],
+        imageConfig: { aspectRatio },
+      },
+    }),
+    3, 2000, onStatusUpdate, "Ad Localization"
+  );
+
+  if (response.candidates?.[0]?.content?.parts) {
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData?.data) {
+        return part.inlineData.data;
+      }
+    }
+  }
+  return null;
+};
+
 export const refinePromptWithGraphUpdates = async (
   originalPrompt: string,
   updates: GraphUpdate[]
