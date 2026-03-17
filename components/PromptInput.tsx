@@ -1,0 +1,204 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+
+import React, { useRef } from 'react';
+import { ImagePlus, X } from 'lucide-react';
+import { AttachedImage } from '../types';
+
+interface PromptInputProps {
+  prompt: string;
+  setPrompt: (prompt: string) => void;
+  onSubmit: () => void;
+  onAnalyze: () => void; // New prop for analysis only
+  isLoading: boolean; // General loading state (disables inputs)
+  isGenerating: boolean; // Specific generation state (shows spinner)
+  isFirstRun: boolean;
+  mode: 'image' | 'story' | 'video';
+  setMode: (mode: 'image' | 'story' | 'video') => void;
+  attachedImage: AttachedImage | null;
+  setAttachedImage: (image: AttachedImage | null) => void;
+}
+
+const PromptInput: React.FC<PromptInputProps> = ({ 
+  prompt, 
+  setPrompt, 
+  onSubmit,
+  onAnalyze,
+  isLoading, 
+  isGenerating, 
+  isFirstRun, 
+  mode, 
+  setMode,
+  attachedImage,
+  setAttachedImage
+}) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      // Extract the base64 data part
+      const data = base64String.split(',')[1];
+      setAttachedImage({
+        data,
+        mimeType: file.type
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col transition-colors duration-200">
+      <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex justify-between items-center">
+        <h2 className="text-base md:text-lg font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">Prompt</h2>
+      </div>
+      
+      <div className="p-3 md:p-5 flex flex-col gap-3 md:gap-4">
+        <div 
+          className={`w-full relative ${isLoading ? 'cursor-not-allowed' : ''}`} 
+          title={isLoading ? "Input is disabled while processing your request. Please wait." : "Edit your prompt here."}
+        >
+            <textarea
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="an image of a large homemade breakfast..."
+            className="w-full h-20 md:h-28 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl p-3 text-zinc-900 dark:text-zinc-50 focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 focus:border-zinc-900 dark:focus:border-zinc-100 focus:outline-none resize-none text-sm md:text-base leading-relaxed shadow-inner transition-all disabled:opacity-50 disabled:pointer-events-none"
+            disabled={isLoading}
+            />
+            
+            <div className="absolute bottom-2 right-2 flex gap-2">
+              <input 
+                type="file" 
+                accept="image/*" 
+                className="hidden" 
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                disabled={isLoading}
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isLoading}
+                className="p-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50"
+                title="Attach an image"
+              >
+                <ImagePlus size={18} />
+              </button>
+            </div>
+        </div>
+
+        {attachedImage && (
+          <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 w-max">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
+              <img 
+                src={`data:${attachedImage.mimeType};base64,${attachedImage.data}`} 
+                alt="Attached preview" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">Image Attached</span>
+              <button 
+                onClick={() => setAttachedImage(null)}
+                disabled={isLoading}
+                className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 mt-0.5 disabled:opacity-50"
+              >
+                <X size={12} /> Remove
+              </button>
+            </div>
+          </div>
+        )}
+        
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div 
+                className={`flex bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-xl transition-colors overflow-x-auto max-w-full ${isLoading ? 'cursor-not-allowed opacity-75' : ''}`} 
+                title={isLoading ? "Mode selection is disabled while processing" : "Select generation mode"}
+            >
+                <button 
+                    onClick={() => setMode('image')}
+                    disabled={isLoading}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                        mode === 'image' 
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600' 
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                    }`}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>Image</span>
+                </button>
+                <button 
+                    onClick={() => setMode('story')}
+                    disabled={isLoading}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                        mode === 'story' 
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600' 
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                    }`}
+                >
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span>Story</span>
+                </button>
+                 <button 
+                    onClick={() => setMode('video')}
+                    disabled={isLoading}
+                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                        mode === 'video' 
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600' 
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                    }`}
+                >
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                     </svg>
+                    <span>Video</span>
+                </button>
+            </div>
+
+            <div 
+                className={`flex gap-2 ${isLoading || !prompt ? "cursor-not-allowed" : ""}`}
+                title={isLoading ? "Please wait for current operation to finish" : (!prompt ? "Please enter a prompt first" : "")}
+            >
+                <button
+                onClick={(e) => {
+                    e.preventDefault();
+                    onAnalyze();
+                }}
+                disabled={isLoading || !prompt}
+                className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:bg-zinc-50 dark:disabled:bg-zinc-900 disabled:text-zinc-400 text-zinc-800 dark:text-zinc-200 font-semibold py-1.5 md:py-2 px-3 md:px-4 rounded-xl flex items-center justify-center transition-all shadow-sm text-sm md:text-base disabled:pointer-events-none border border-zinc-200 dark:border-zinc-700"
+                >
+                    <span>Analyze Prompt</span>
+                </button>
+
+                <button
+                onClick={(e) => {
+                    e.preventDefault();
+                    onSubmit();
+                }}
+                disabled={isLoading || !prompt}
+                className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:pointer-events-none text-white dark:text-zinc-900 font-semibold py-1.5 md:py-2 px-4 md:px-6 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 text-sm md:text-base"
+                >
+                {isGenerating && (
+                    <svg className="animate-spin h-4 w-4 md:h-5 md:w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                )}
+                <span>{isFirstRun ? "Generate" : "Regenerate"}</span>
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PromptInput;
