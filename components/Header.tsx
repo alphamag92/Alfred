@@ -4,17 +4,22 @@
 */
 
 import React, { useState, useRef, useEffect } from 'react';
+import { Globe } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { Language } from '../i18n/translations';
+
+type Mode = 'image' | 'story' | 'video' | 'prompt' | 'localize';
 
 interface HeaderProps {
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     onSelectKey: () => void;
     apiKeySet: boolean;
+    mode: Mode;
+    onModeChange: (mode: Mode) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey, apiKeySet }) => {
+const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey, apiKeySet, mode, onModeChange }) => {
   const { language, setLanguage, t, outputLanguage, setOutputLanguage } = useLanguage();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -38,8 +43,34 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
           className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg"
         />
         <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+
+        {/* Nav: Ad Localizer */}
+        <button
+          onClick={() => onModeChange(mode === 'localize' ? 'image' : 'localize')}
+          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[36px] ml-2 ${
+            mode === 'localize'
+              ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
+              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+          }`}
+          title={t.localize}
+        >
+          <Globe className="h-4 w-4" />
+          <span>{t.localize}</span>
+        </button>
       </div>
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Mobile: Ad Localizer */}
+        <button
+          onClick={() => onModeChange(mode === 'localize' ? 'image' : 'localize')}
+          className={`sm:hidden p-2.5 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[44px] min-w-[44px] flex items-center justify-center ${
+            mode === 'localize'
+              ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+          title={t.localize}
+        >
+          <Globe className="h-5 w-5" />
+        </button>
         <button
           onClick={onSelectKey}
           className={`px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-colors focus:outline-none focus:ring-2 flex items-center gap-1.5 sm:gap-2 min-h-[44px] ${
