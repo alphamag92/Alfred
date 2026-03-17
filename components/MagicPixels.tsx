@@ -91,6 +91,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
   // Drag-and-drop
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageContainerRef = useRef<HTMLDivElement>(null);
 
   // Sync initialImage prop
   useEffect(() => {
@@ -158,12 +159,31 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   // ── Retouch ────────────────────────────────────────────────────────────────
 
+  // ── Touch / pointer helpers ───────────────────────────────────────────────
+
+  const getTouchPos = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0] || e.changedTouches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    return {
+      x: (touch.clientX - rect.left) / rect.width,
+      y: (touch.clientY - rect.top) / rect.height,
+    };
+  };
+
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (editMode !== 'retouch' || isProcessing) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setHotspot({ x, y });
+  };
+
+  const handleImageTap = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (editMode !== 'retouch' || isProcessing) return;
+    if (editMode === 'retouch') {
+      const pos = getTouchPos(e);
+      setHotspot({ x: pos.x * 100, y: pos.y * 100 });
+    }
   };
 
   const handleApplyRetouch = async () => {
@@ -330,6 +350,39 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   const handleCropMouseUp = () => setIsCropping(false);
 
+  // ── Touch crop handlers ──────────────────────────────────────────────────
+
+  const handleCropTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (editMode !== 'crop' || isProcessing) return;
+    e.preventDefault();
+    const pos = getTouchPos(e);
+    setCropStart({ x: pos.x, y: pos.y });
+    setCropEnd({ x: pos.x, y: pos.y });
+    setIsCropping(true);
+  };
+
+  const handleCropTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isCropping || !cropStart || editMode !== 'crop') return;
+    e.preventDefault();
+    const pos = getTouchPos(e);
+    let x = Math.max(0, Math.min(1, pos.x));
+    let y = Math.max(0, Math.min(1, pos.y));
+
+    if (aspectRatio === '1:1') {
+      const size = Math.min(Math.abs(x - cropStart.x), Math.abs(y - cropStart.y));
+      x = cropStart.x + (x >= cropStart.x ? size : -size);
+      y = cropStart.y + (y >= cropStart.y ? size : -size);
+    } else if (aspectRatio === '16:9') {
+      const w = Math.abs(x - cropStart.x);
+      const h = w * (9 / 16);
+      y = cropStart.y + (y >= cropStart.y ? h : -h);
+    }
+
+    setCropEnd({ x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) });
+  };
+
+  const handleCropTouchEnd = () => setIsCropping(false);
+
   const handleApplyCrop = async () => {
     const crop = getCropFromState();
     if (!crop || !currentImage) return;
@@ -458,7 +511,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
       <button
         onClick={handleApplyRetouch}
         disabled={isProcessing || !hotspot || !retouchPrompt.trim()}
-        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isProcessing ? <><Spinner className="h-4 w-4" /><span>{t.mpProcessing}</span></> : t.mpApplyRetouch}
       </button>
@@ -467,13 +520,13 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   const renderAdjustPanel = () => (
     <div className="flex flex-col gap-3 overflow-y-auto">
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-1 lg:grid-cols-1 gap-2">
         {ADJUSTMENT_PRESETS.map(preset => (
           <button
             key={preset.key}
             onClick={() => handleApplyTransform(preset.prompt)}
             disabled={isProcessing}
-            className="text-left px-4 py-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-left px-3 sm:px-4 py-2.5 sm:py-3 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 active:bg-zinc-200 dark:active:bg-zinc-600 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {(t as any)[preset.labelKey]}
           </button>
@@ -499,7 +552,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
         <button
           onClick={handleApplyFeather}
           disabled={isProcessing}
-          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isProcessing ? <><Spinner className="h-4 w-4" /><span>{t.mpProcessing}</span></> : t.mpApplyFeather}
         </button>
@@ -537,7 +590,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
             key={preset.key}
             onClick={() => handleApplyTransform(preset.prompt)}
             disabled={isProcessing}
-            className="text-left px-3 py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-left px-3 py-2.5 bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 active:bg-zinc-200 dark:active:bg-zinc-600 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {(t as any)[preset.labelKey]}
           </button>
@@ -594,7 +647,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
       <button
         onClick={handleApplyCrop}
         disabled={isProcessing || !cropRect}
-        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isProcessing ? <><Spinner className="h-4 w-4" /><span>{t.mpProcessing}</span></> : t.mpApplyCrop}
       </button>
@@ -619,11 +672,12 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
     ];
 
     return (
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-y-auto lg:overflow-hidden">
         {/* Image area */}
-        <div className="flex-1 min-h-0 lg:min-w-0 flex items-center justify-center p-3 sm:p-4 lg:p-5 bg-zinc-100 dark:bg-zinc-950">
+        <div className="flex-1 min-h-0 lg:min-w-0 flex items-center justify-center p-2 sm:p-4 lg:p-5 bg-zinc-100 dark:bg-zinc-950">
           <div
-            className={`relative max-h-full max-w-full inline-block select-none ${
+            ref={imageContainerRef}
+            className={`relative max-h-full max-w-full inline-block select-none touch-none ${
               editMode === 'retouch' ? 'cursor-crosshair' : editMode === 'crop' ? 'cursor-crosshair' : 'cursor-default'
             }`}
             onClick={handleImageClick}
@@ -631,6 +685,9 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
             onMouseMove={handleCropMouseMove}
             onMouseUp={handleCropMouseUp}
             onMouseLeave={handleCropMouseUp}
+            onTouchStart={editMode === 'crop' ? handleCropTouchStart : undefined}
+            onTouchMove={editMode === 'crop' ? handleCropTouchMove : undefined}
+            onTouchEnd={editMode === 'crop' ? handleCropTouchEnd : (editMode === 'retouch' ? handleImageTap : undefined)}
             style={{
               backgroundImage: 'repeating-conic-gradient(#d4d4d8 0% 25%, transparent 0% 50%)',
               backgroundSize: '16px 16px',
@@ -640,7 +697,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
             <img
               src={currentImage!}
               alt="Editing canvas"
-              className="max-w-full max-h-[40vh] lg:max-h-[75vh] object-contain rounded-lg shadow-lg block pointer-events-none"
+              className="max-w-full max-h-[50vh] sm:max-h-[55vh] lg:max-h-[75vh] object-contain rounded-lg shadow-lg block pointer-events-none"
               draggable={false}
             />
 
@@ -690,7 +747,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
         </div>
 
         {/* Side panel */}
-        <div className="w-full lg:w-72 xl:w-80 flex flex-col border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0">
+        <div className="w-full lg:w-72 xl:w-80 flex flex-col border-t lg:border-t-0 lg:border-l border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0 lg:min-h-0">
           {/* Mode tabs */}
           <div className="flex border-b border-zinc-200 dark:border-zinc-800 flex-shrink-0">
             {tabs.map(tab => (
@@ -698,7 +755,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
                 key={tab.key}
                 onClick={() => { setEditMode(tab.key); setHotspot(null); setCropStart(null); setCropEnd(null); }}
                 disabled={isProcessing}
-                className={`flex-1 py-2.5 sm:py-3 text-[11px] sm:text-xs font-semibold flex flex-col items-center gap-0.5 transition-colors focus:outline-none disabled:opacity-50 ${
+                className={`flex-1 py-3 text-xs font-semibold flex flex-col items-center gap-0.5 transition-colors focus:outline-none disabled:opacity-50 min-h-[44px] ${
                   editMode === tab.key
                     ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 -mb-px bg-white dark:bg-zinc-900'
                     : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800'
@@ -711,7 +768,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
           </div>
 
           {/* Panel content */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
             {editMode === 'retouch' && renderRetouchPanel()}
             {editMode === 'adjust'  && renderAdjustPanel()}
             {editMode === 'filter'  && renderFilterPanel()}
@@ -736,13 +793,13 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
   return (
     <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-white dark:bg-zinc-900 lg:rounded-xl lg:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200">
       {/* Header bar */}
-      <div className="flex items-center gap-2 px-3 sm:px-4 py-2.5 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex-shrink-0">
         {/* Back */}
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
+          className="flex items-center gap-1.5 px-2.5 py-2.5 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[44px] min-w-[44px] justify-center sm:justify-start"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
           <span className="hidden sm:inline">{t.backToAlfred}</span>
@@ -759,16 +816,16 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
         </div>
 
         {/* Controls */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           {currentImage && (
             <>
               {/* Upload new */}
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none"
+                className="p-2.5 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={t.mpChooseFile}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px] sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
               </button>
@@ -776,10 +833,10 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
               <button
                 onClick={undo}
                 disabled={!canUndo || isProcessing}
-                className="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none disabled:opacity-40"
+                className="p-2.5 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={t.mpUndo}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px] sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                 </svg>
               </button>
@@ -787,20 +844,20 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
               <button
                 onClick={redo}
                 disabled={!canRedo || isProcessing}
-                className="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none disabled:opacity-40"
+                className="p-2.5 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none disabled:opacity-40 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={t.mpRedo}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px] sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6" />
                 </svg>
               </button>
               {/* Download */}
               <button
                 onClick={downloadImage}
-                className="p-2 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none"
+                className="p-2.5 rounded-xl text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors focus:outline-none min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={t.downloadImage}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px] sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
               </button>
