@@ -97,14 +97,16 @@ function App() {
     modeRef.current = mode;
   }, [mode]);
 
-  // Sync Dark Mode to Body to prevent background mismatch during overscroll
+  // Sync Dark Mode to Body — toggle theme classes for animated background
   useEffect(() => {
       if (isDarkMode) {
           document.documentElement.classList.add('dark');
-          document.body.style.backgroundColor = '#09090b'; // zinc-950
+          document.body.classList.add('theme-dark');
+          document.body.classList.remove('theme-light');
       } else {
           document.documentElement.classList.remove('dark');
-          document.body.style.backgroundColor = '#fafafa'; // zinc-50
+          document.body.classList.add('theme-light');
+          document.body.classList.remove('theme-dark');
       }
   }, [isDarkMode]);
 
@@ -450,7 +452,7 @@ function App() {
   const totalUpdateCount = pendingClarificationCount + pendingGraphUpdatesCount;
 
   return (
-    <div className={`${isDarkMode ? 'dark' : ''} font-sans h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-200 overflow-hidden`}>
+    <div className={`${isDarkMode ? 'dark' : ''} font-sans h-screen flex flex-col bg-transparent text-zinc-900 dark:text-zinc-50 transition-colors duration-200 overflow-hidden`}>
         <Header
             isDarkMode={isDarkMode}
             toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
@@ -495,7 +497,7 @@ function App() {
             <div className="flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0">
 
             {/* Left Column (Editor) */}
-            <div className={`flex flex-col gap-0 bg-white dark:bg-zinc-900 lg:rounded-xl lg:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden lg:flex'} h-full overflow-y-auto`}>
+            <div className={`flex flex-col gap-0 bg-white/80 dark:bg-zinc-900/70 backdrop-blur-lg lg:rounded-xl lg:border border-zinc-200/60 dark:border-zinc-700/40 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden lg:flex'} h-full overflow-y-auto`}>
 
                 {/* 1. Prompt Input Area */}
                 <div className="flex-shrink-0 z-10 border-b border-zinc-200 dark:border-zinc-800">
@@ -615,7 +617,7 @@ function App() {
 
         {/* Mobile Bottom Navigation - Fixed */}
         <div
-            className={`lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0 ${mode === 'localize' || mode === 'magicpixels' ? 'hidden' : ''}`}
+            className={`lg:hidden bg-white/60 dark:bg-zinc-900/60 backdrop-blur-xl border-t border-zinc-200/50 dark:border-zinc-700/40 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0 ${mode === 'localize' || mode === 'magicpixels' ? 'hidden' : ''}`}
             style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
         >
             <button
