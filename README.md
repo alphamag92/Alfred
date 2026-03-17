@@ -41,7 +41,7 @@ A full-featured photo editor powered by Gemini, accessible directly from Alfred:
 
 ### Other
 - Dark mode / Light mode toggle
-- Image attachment for reference-based generation
+- **Image & Document attachments** — Attach images and/or documents (JSON, Markdown, TXT, CSV, PDF, HTML, XML, YAML) to enrich your prompt. Documents are sent to Gemini as context for all main functions (Image, Story, Video, Prompt). Ad Localizer and Magic Pixels are not affected.
 - Mobile-responsive layout (Editor / Preview tabs on small screens)
 - Mode-specific prompt tips
 
@@ -136,11 +136,12 @@ Alfred/
 ## How It Works
 
 1. **Write a prompt** describing what you want to create.
-2. **Choose a mode** — Image, Story, Video, or Prompt.
-3. **Analyze** your prompt to get clarifying questions and a belief graph.
-4. **Refine** by answering questions and editing attributes.
-5. **Generate** your content.
-6. *(Optional)* Hover a generated image → **"Edit in Magic Pixels"** to open the photo editor.
+2. *(Optional)* **Attach files** — click the paperclip icon to attach documents (JSON, MD, PDF, etc.) or the image icon to attach a reference image. Both can be used at the same time.
+3. **Choose a mode** — Image, Story, Video, or Prompt.
+4. **Analyze** your prompt to get clarifying questions and a belief graph.
+5. **Refine** by answering questions and editing attributes.
+6. **Generate** your content.
+7. *(Optional)* Hover a generated image → **"Edit in Magic Pixels"** to open the photo editor.
 
 The app decomposes your prompt into a belief graph of entities, attributes, and relationships, giving you fine-grained control over every detail of what Gemini generates.
 
