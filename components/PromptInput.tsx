@@ -79,10 +79,12 @@ const PromptInput: React.FC<PromptInputProps> = ({
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
+    const fileArray = Array.from(files);
+    const totalFiles = fileArray.length;
     const newDocs: AttachedDocument[] = [];
     let loaded = 0;
 
-    Array.from(files).forEach(file => {
+    fileArray.forEach(file => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
@@ -93,8 +95,8 @@ const PromptInput: React.FC<PromptInputProps> = ({
           fileName: file.name
         });
         loaded++;
-        if (loaded === files.length) {
-          setAttachedDocuments([...attachedDocuments, ...newDocs]);
+        if (loaded === totalFiles) {
+          setAttachedDocuments(prev => [...prev, ...newDocs]);
         }
       };
       reader.readAsDataURL(file);
@@ -105,7 +107,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
   };
 
   const removeDocument = (index: number) => {
-    setAttachedDocuments(attachedDocuments.filter((_, i) => i !== index));
+    setAttachedDocuments(prev => prev.filter((_, i) => i !== index));
   };
 
   const getFileIcon = (mimeType: string) => {
