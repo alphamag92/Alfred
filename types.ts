@@ -44,6 +44,12 @@ export interface AttachedImage {
   mimeType: string;
 }
 
+export interface AttachedDocument {
+  data: string;
+  mimeType: string;
+  fileName: string;
+}
+
 export type GraphUpdate = 
   | { type: 'attribute'; entity: string; attribute: string; value: string }
   | { type: 'relationship'; source: string; target: string; oldLabel: string; newLabel: string };

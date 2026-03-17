@@ -4,9 +4,25 @@
 */
 
 import React, { useRef, useState } from 'react';
-import { ImagePlus, X } from 'lucide-react';
-import { AttachedImage } from '../types';
+import { ImagePlus, Paperclip, X, FileText } from 'lucide-react';
+import { AttachedImage, AttachedDocument } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
+
+const ACCEPTED_DOC_TYPES = '.json,.md,.txt,.csv,.pdf,.html,.xml,.yaml,.yml,.log,.tsv,.rtf';
+const ACCEPTED_DOC_MIMES = [
+  'application/json',
+  'text/markdown',
+  'text/plain',
+  'text/csv',
+  'application/pdf',
+  'text/html',
+  'application/xml',
+  'text/xml',
+  'application/x-yaml',
+  'text/yaml',
+  'text/tab-separated-values',
+  'application/rtf',
+];
 
 interface PromptInputProps {
   prompt: string;
@@ -20,6 +36,8 @@ interface PromptInputProps {
   setMode: (mode: 'image' | 'story' | 'video' | 'prompt' | 'localize') => void;
   attachedImage: AttachedImage | null;
   setAttachedImage: (image: AttachedImage | null) => void;
+  attachedDocuments: AttachedDocument[];
+  setAttachedDocuments: (docs: AttachedDocument[]) => void;
 }
 
 const PromptInput: React.FC<PromptInputProps> = ({
@@ -33,10 +51,14 @@ const PromptInput: React.FC<PromptInputProps> = ({
   mode,
   setMode,
   attachedImage,
-  setAttachedImage
+  setAttachedImage,
+  attachedDocuments,
+  setAttachedDocuments
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const docInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -51,6 +73,50 @@ const PromptInput: React.FC<PromptInputProps> = ({
       });
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    const newDocs: AttachedDocument[] = [];
+    let loaded = 0;
+
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        const data = base64String.split(',')[1];
+        newDocs.push({
+          data,
+          mimeType: file.type || 'application/octet-stream',
+          fileName: file.name
+        });
+        loaded++;
+        if (loaded === files.length) {
+          setAttachedDocuments([...attachedDocuments, ...newDocs]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset input so the same file can be re-selected
+    if (docInputRef.current) docInputRef.current.value = '';
+  };
+
+  const removeDocument = (index: number) => {
+    setAttachedDocuments(attachedDocuments.filter((_, i) => i !== index));
+  };
+
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType === 'application/pdf') return 'PDF';
+    if (mimeType === 'application/json') return 'JSON';
+    if (mimeType === 'text/markdown') return 'MD';
+    if (mimeType === 'text/csv') return 'CSV';
+    if (mimeType === 'text/html') return 'HTML';
+    if (mimeType.includes('xml')) return 'XML';
+    if (mimeType.includes('yaml')) return 'YAML';
+    return 'TXT';
   };
 
   return (
@@ -81,6 +147,23 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 onChange={handleImageUpload}
                 disabled={isLoading}
               />
+              <input
+                type="file"
+                accept={ACCEPTED_DOC_TYPES}
+                className="hidden"
+                ref={docInputRef}
+                onChange={handleDocumentUpload}
+                disabled={isLoading}
+                multiple
+              />
+              <button
+                onClick={() => docInputRef.current?.click()}
+                disabled={isLoading}
+                className="p-2 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                title={t.attachDocument}
+              >
+                <Paperclip size={20} />
+              </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
@@ -92,6 +175,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
             </div>
         </div>
 
+        {/* Attached Image Preview */}
         {attachedImage && (
           <div className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200 dark:border-zinc-800 w-max">
             <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700">
@@ -111,6 +195,29 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 <X size={12} /> {t.remove}
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Attached Documents Preview */}
+        {attachedDocuments.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {attachedDocuments.map((doc, index) => (
+              <div key={index} className="flex items-center gap-2 bg-zinc-50 dark:bg-zinc-950 p-2 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">{getFileIcon(doc.mimeType)}</span>
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]" title={doc.fileName}>{doc.fileName}</span>
+                  <button
+                    onClick={() => removeDocument(index)}
+                    disabled={isLoading}
+                    className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1 mt-0.5 disabled:opacity-50"
+                  >
+                    <X size={12} /> {t.remove}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 

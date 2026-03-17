@@ -18,7 +18,10 @@ export interface Translations {
   story: string;
   video: string;
   attachImage: string;
+  attachDocument: string;
   imageAttached: string;
+  documentAttached: string;
+  documentsAttached: (count: number) => string;
   remove: string;
   modeDisabledWhileProcessing: string;
   inputDisabledWhileProcessing: string;
@@ -175,7 +178,10 @@ export const translations: Record<Language, Translations> = {
     story: 'Story',
     video: 'Video',
     attachImage: 'Attach an image',
+    attachDocument: 'Attach a document',
     imageAttached: 'Image Attached',
+    documentAttached: 'Document Attached',
+    documentsAttached: (count: number) => `${count} Document${count !== 1 ? 's' : ''} Attached`,
     remove: 'Remove',
     modeDisabledWhileProcessing: 'Mode selection is disabled while processing',
     inputDisabledWhileProcessing: 'Input is disabled while processing your request. Please wait.',
@@ -337,7 +343,10 @@ export const translations: Record<Language, Translations> = {
     story: 'Storia',
     video: 'Video',
     attachImage: 'Allega un\'immagine',
+    attachDocument: 'Allega un documento',
     imageAttached: 'Immagine Allegata',
+    documentAttached: 'Documento Allegato',
+    documentsAttached: (count: number) => `${count} Document${count !== 1 ? 'i' : 'o'} Allegat${count !== 1 ? 'i' : 'o'}`,
     remove: 'Rimuovi',
     modeDisabledWhileProcessing: 'Selezione modalita\' disabilitata durante l\'elaborazione',
     inputDisabledWhileProcessing: 'Input disabilitato durante l\'elaborazione. Attendere.',

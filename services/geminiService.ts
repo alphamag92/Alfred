@@ -4,7 +4,7 @@
 */
 
 import { GoogleGenAI, GenerateContentResponse, GenerateImagesResponse, Modality, Type } from "@google/genai";
-import { BeliefState, Clarification, Relationship, Candidate, GraphUpdate, Entity, Attribute, AttachedImage } from '../types';
+import { BeliefState, Clarification, Relationship, Candidate, GraphUpdate, Entity, Attribute, AttachedImage, AttachedDocument } from '../types';
 
 const getApiKey = () => {
   return process.env.API_KEY || localStorage.getItem('GEMINI_API_KEY');
@@ -84,9 +84,48 @@ const withRetry = async <T>(
 // --- END: Retry Logic for API Calls ---
 
 /**
+ * Builds content parts from text, optional image, and optional documents.
+ * Returns a string (text only) or an object with parts array for multimodal content.
+ */
+const buildContentParts = (text: string, image?: AttachedImage | null, documents?: AttachedDocument[] | null): string | { parts: any[] } => {
+    const hasImage = !!image;
+    const hasDocs = documents && documents.length > 0;
+
+    if (!hasImage && !hasDocs) return text;
+
+    const parts: any[] = [{ text }];
+
+    if (hasImage) {
+        parts.push({ inlineData: { data: image.data, mimeType: image.mimeType } });
+    }
+
+    if (hasDocs) {
+        for (const doc of documents) {
+            parts.push({ inlineData: { data: doc.data, mimeType: doc.mimeType } });
+        }
+    }
+
+    return { parts };
+};
+
+/**
+ * Builds a description string for prompt context indicating attached files.
+ */
+const describeAttachments = (image?: AttachedImage | null, documents?: AttachedDocument[] | null): string => {
+    const parts: string[] = [];
+    if (image) parts.push('the provided image');
+    if (documents && documents.length > 0) {
+        const names = documents.map(d => `"${d.fileName}"`).join(', ');
+        parts.push(`the provided document${documents.length > 1 ? 's' : ''} (${names})`);
+    }
+    if (parts.length === 0) return '';
+    return `and ${parts.join(' and ')} `;
+};
+
+/**
  * Generates the complete Belief Graph including Entities, Relationships, AND Rich Attributes in a single pass.
  */
-export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<BeliefState> => {
+export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string, documents?: AttachedDocument[] | null): Promise<BeliefState> => {
     console.log(`Generating Full Belief Graph (Structure + Attributes) for ${mode}:`, prompt);
 
     let specificInstructions = "";
@@ -117,8 +156,9 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
         `;
     }
 
+    const attachDesc = describeAttachments(image, documents);
     const generationPrompt = `
-    Analyze the prompt ${image ? 'and the provided image ' : ''}and generate a complete **Belief Graph** representing the scene or story.
+    Analyze the prompt ${attachDesc}and generate a complete **Belief Graph** representing the scene or story.
     Identify all entities, their detailed attributes, and their relationships.
 
     Entity Types:
@@ -174,12 +214,7 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
         required: ['source', 'target', 'label'] 
     };
 
-    const contents = image ? {
-        parts: [
-            { text: generationPrompt },
-            { inlineData: { data: image.data, mimeType: image.mimeType } }
-        ]
-    } : generationPrompt;
+    const contents = buildContentParts(generationPrompt, image, documents);
 
     try {
         const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
@@ -228,11 +263,13 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
     }
 };
 
-export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<Clarification[]> => {
+export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string, documents?: AttachedDocument[] | null): Promise<Clarification[]> => {
     console.log(`Generating clarifications for ${mode} mode from prompt:`, prompt);
     
+    const attachDesc = describeAttachments(image, documents);
+
     const imagePrompt = `You are an expert in text-to-image prompting. Your goal is to help a user refine their prompt by asking clarifying questions.
-First, reason about the user's prompt ${image ? 'and the provided image ' : ''}to identify entities, their attributes, and areas of visual uncertainty.
+First, reason about the user's prompt ${attachDesc}to identify entities, their attributes, and areas of visual uncertainty.
 Then, generate questions that target these uncertainties to gather more specific visual details.
 
 Focus on:
@@ -241,7 +278,7 @@ Focus on:
 - Ambiguous scene properties (e.g., location, time of day, style).`;
 
     const videoPrompt = `You are an expert in AI video generation prompting. Your goal is to help a user refine their prompt by asking clarifying questions.
-First, reason about the user's prompt ${image ? 'and the provided image ' : ''}to identify the visual narrative, camera movement, and temporal dynamics.
+First, reason about the user's prompt ${attachDesc}to identify the visual narrative, camera movement, and temporal dynamics.
 Then, generate questions that target these uncertainties.
 
 Focus on:
@@ -250,7 +287,7 @@ Focus on:
 - Atmosphere and Lighting changes over time.`;
 
     const storyPrompt = `You are a creative writing assistant. Your goal is to help a user develop their story idea by asking insightful clarifying questions based on their initial prompt.
-First, reason about the prompt ${image ? 'and the provided image ' : ''}to identify potential characters, settings, plot points, and themes.
+First, reason about the prompt ${attachDesc}to identify potential characters, settings, plot points, and themes.
 Then, generate questions that explore areas that would enrich the narrative.
 
 Focus on:
@@ -260,7 +297,7 @@ Focus on:
 - The overall tone or theme of the story.`;
 
     const promptCreatorPrompt = `You are an expert prompt engineer and AI communication specialist. Your goal is to help a user craft the perfect prompt by asking clarifying questions.
-First, reason about the user's initial idea ${image ? 'and the provided image ' : ''}to understand their intent, the target AI system, and the desired output.
+First, reason about the user's initial idea ${attachDesc}to understand their intent, the target AI system, and the desired output.
 Then, generate questions that will help refine the prompt into something precise and effective.
 
 Focus on:
@@ -290,12 +327,7 @@ User Prompt: "${prompt}"
 
 Return the output as a JSON array of objects, where each object has a 'question' and an 'options' array.${langInstruction || ''}`;
 
-    const contents = image ? {
-        parts: [
-            { text: finalPromptText },
-            { inlineData: { data: image.data, mimeType: image.mimeType } }
-        ]
-    } : finalPromptText;
+    const contents = buildContentParts(finalPromptText, image, documents);
 
     try {
         const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
@@ -397,7 +429,8 @@ export const refinePromptWithAllUpdates = async (
     clarifications: { question: string; answer: string }[],
     graphUpdates: GraphUpdate[],
     onStatusUpdate?: StatusUpdateCallback,
-    image?: AttachedImage | null
+    image?: AttachedImage | null,
+    documents?: AttachedDocument[] | null
   ): Promise<string> => {
     console.log("Refining prompt with combined updates:", { originalPrompt, clarifications, graphUpdates });
   
@@ -419,7 +452,8 @@ export const refinePromptWithAllUpdates = async (
         updatesPromptSection += `\nNEW INFORMATION FROM Q&A:\n${qaList}\n`;
     }
   
-    const prompt = `You are an expert prompt engineer. Your goal is to rewrite the prompt ${image ? 'and the provided image ' : ''}to seamlessly incorporate specific user edits while strictly preserving all other existing details.
+    const attachDesc = describeAttachments(image, documents);
+    const prompt = `You are an expert prompt engineer. Your goal is to rewrite the prompt ${attachDesc}to seamlessly incorporate specific user edits while strictly preserving all other existing details.
     
   Original Prompt: "${originalPrompt}"
   
@@ -437,12 +471,7 @@ export const refinePromptWithAllUpdates = async (
   
   Updated Prompt:`;
   
-    const contents = image ? {
-        parts: [
-            { text: prompt },
-            { inlineData: { data: image.data, mimeType: image.mimeType } }
-        ]
-    } : prompt;
+    const contents = buildContentParts(prompt, image, documents);
 
     try {
       const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
@@ -456,15 +485,20 @@ export const refinePromptWithAllUpdates = async (
     }
   };
 
-export const generateImagesFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null): Promise<string[]> => {
+export const generateImagesFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, documents?: AttachedDocument[] | null): Promise<string[]> => {
     console.log("Generating images for prompt:", prompt);
-    
+
     // Helper to generate one image using gemini-3.1-flash-image-preview
     const generateOne = async (): Promise<string | null> => {
         try {
             const parts: any[] = [{ text: prompt }];
             if (image) {
                 parts.unshift({ inlineData: { data: image.data, mimeType: image.mimeType } });
+            }
+            if (documents && documents.length > 0) {
+                for (const doc of documents) {
+                    parts.push({ inlineData: { data: doc.data, mimeType: doc.mimeType } });
+                }
             }
             const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
                 model: 'gemini-3.1-flash-image-preview',
@@ -523,7 +557,7 @@ export const generateImagesFromPrompt = async (prompt: string, onStatusUpdate?: 
     return images;
 };
 
-export const generateVideosFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null): Promise<string> => {
+export const generateVideosFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, documents?: AttachedDocument[] | null): Promise<string> => {
     console.log("Generating video for prompt:", prompt);
     
     try {
@@ -583,20 +617,16 @@ export const generateVideosFromPrompt = async (prompt: string, onStatusUpdate?: 
     }
 };
 
-export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<string> => {
+export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string, documents?: AttachedDocument[] | null): Promise<string> => {
     console.log("Generating story for prompt:", prompt);
-    const storyGenerationPrompt = `Based on the following idea ${image ? 'and the provided image ' : ''}, write a short, creative story. The story should be engaging and well-structured.
+    const attachDesc = describeAttachments(image, documents);
+    const storyGenerationPrompt = `Based on the following idea ${attachDesc}, write a short, creative story. The story should be engaging and well-structured.${documents && documents.length > 0 ? ' Use the content from the attached documents as reference material, context, or inspiration for the story.' : ''}
 
     Idea: "${prompt}"
     ${langInstruction || ''}
     Story:`;
 
-    const contents = image ? {
-        parts: [
-            { text: storyGenerationPrompt },
-            { inlineData: { data: image.data, mimeType: image.mimeType } }
-        ]
-    } : storyGenerationPrompt;
+    const contents = buildContentParts(storyGenerationPrompt, image, documents);
 
     try {
         const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
@@ -622,9 +652,10 @@ export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: S
     }
 };
 
-export const generatePerfectPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<string> => {
+export const generatePerfectPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string, documents?: AttachedDocument[] | null): Promise<string> => {
     console.log("Generating perfect prompt from idea:", prompt);
-    const generationPrompt = `You are a world-class prompt engineer. Your task is to take a user's rough idea and transform it into a **perfect, highly detailed, and effective prompt** that could be used with any AI system (image generators, text models, video tools, etc.).
+    const attachDesc = describeAttachments(image, documents);
+    const generationPrompt = `You are a world-class prompt engineer. Your task is to take a user's rough idea ${attachDesc}and transform it into a **perfect, highly detailed, and effective prompt** that could be used with any AI system (image generators, text models, video tools, etc.).
 
 The perfect prompt should:
 1. **Be crystal clear** — remove all ambiguity from the original idea.
@@ -633,7 +664,7 @@ The perfect prompt should:
 4. **Include context** — specify the target use case, audience, and desired quality.
 5. **Anticipate edge cases** — add guardrails and negative constraints where appropriate.
 6. **Be actionable** — the prompt should work immediately when pasted into an AI tool.
-
+${documents && documents.length > 0 ? '7. **Incorporate document context** — leverage the content from the attached documents to enrich and inform the prompt.\n' : ''}
 User's rough idea: "${prompt}"
 ${langInstruction || ''}
 
@@ -641,12 +672,7 @@ Generate the perfect, refined prompt. Return ONLY the prompt text, no explanatio
 
 Perfect Prompt:`;
 
-    const contents = image ? {
-        parts: [
-            { text: generationPrompt },
-            { inlineData: { data: image.data, mimeType: image.mimeType } }
-        ]
-    } : generationPrompt;
+    const contents = buildContentParts(generationPrompt, image, documents);
 
     try {
         const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
