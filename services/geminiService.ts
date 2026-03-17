@@ -86,7 +86,7 @@ const withRetry = async <T>(
 /**
  * Generates the complete Belief Graph including Entities, Relationships, AND Rich Attributes in a single pass.
  */
-export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<BeliefState> => {
+export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<BeliefState> => {
     console.log(`Generating Full Belief Graph (Structure + Attributes) for ${mode}:`, prompt);
 
     let specificInstructions = "";
@@ -103,10 +103,17 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
         - **Subjects:** If an entity is active, include Attributes: movement, expression, action_speed, clothing.
         - **Setting:** Include Attributes: location, weather, time_of_day, ambience.
         `;
-    } else {
+    } else if (mode === 'story') {
         specificInstructions = `
         - **The Story Entity:** Always include an entity named "The Story". Required Attributes: genre, tone, narrative_perspective, pacing, central_conflict.
         - **Characters:** Include Attributes: personality, motivation, role, age, background, emotional_state.
+        `;
+    } else {
+        // prompt mode
+        specificInstructions = `
+        - **The Prompt Entity:** Always include an entity named "The Prompt". Required Attributes: intent, domain, complexity, target_audience, desired_output_format.
+        - **Key Concepts:** For each concept/subject mentioned, include Attributes: specificity, importance, context, constraints.
+        - **Context Elements:** Include Attributes: tone, scope, detail_level, perspective.
         `;
     }
 
@@ -221,7 +228,7 @@ export const parsePromptToBeliefGraph = async (prompt: string, mode: 'image' | '
     }
 };
 
-export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<Clarification[]> => {
+export const generateClarifications = async (prompt: string, askedQuestions: string[], mode: 'image' | 'story' | 'video' | 'prompt', onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<Clarification[]> => {
     console.log(`Generating clarifications for ${mode} mode from prompt:`, prompt);
     
     const imagePrompt = `You are an expert in text-to-image prompting. Your goal is to help a user refine their prompt by asking clarifying questions.
@@ -252,9 +259,21 @@ Focus on:
 - Setting details that could influence the mood.
 - The overall tone or theme of the story.`;
 
+    const promptCreatorPrompt = `You are an expert prompt engineer and AI communication specialist. Your goal is to help a user craft the perfect prompt by asking clarifying questions.
+First, reason about the user's initial idea ${image ? 'and the provided image ' : ''}to understand their intent, the target AI system, and the desired output.
+Then, generate questions that will help refine the prompt into something precise and effective.
+
+Focus on:
+- Clarifying the exact intent and desired outcome.
+- Identifying the target audience or AI system (image gen, text gen, code, etc.).
+- Determining the right level of detail, specificity, and constraints.
+- Understanding the tone, style, and format of the desired output.
+- Uncovering implicit requirements or edge cases.`;
+
     let specificPrompt = imagePrompt;
     if (mode === 'story') specificPrompt = storyPrompt;
     if (mode === 'video') specificPrompt = videoPrompt;
+    if (mode === 'prompt') specificPrompt = promptCreatorPrompt;
 
     const finalPromptText = specificPrompt + `
     
@@ -588,6 +607,45 @@ export const generateStoryFromPrompt = async (prompt: string, onStatusUpdate?: S
         return response.text;
     } catch (error) {
         console.error("Error generating story with Gemini:", error);
+        throw error;
+    }
+};
+
+export const generatePerfectPrompt = async (prompt: string, onStatusUpdate?: StatusUpdateCallback, image?: AttachedImage | null, langInstruction?: string): Promise<string> => {
+    console.log("Generating perfect prompt from idea:", prompt);
+    const generationPrompt = `You are a world-class prompt engineer. Your task is to take a user's rough idea and transform it into a **perfect, highly detailed, and effective prompt** that could be used with any AI system (image generators, text models, video tools, etc.).
+
+The perfect prompt should:
+1. **Be crystal clear** — remove all ambiguity from the original idea.
+2. **Be highly specific** — add precise details about style, format, tone, constraints, and expected output.
+3. **Be well-structured** — organize the prompt logically with clear sections if needed.
+4. **Include context** — specify the target use case, audience, and desired quality.
+5. **Anticipate edge cases** — add guardrails and negative constraints where appropriate.
+6. **Be actionable** — the prompt should work immediately when pasted into an AI tool.
+
+User's rough idea: "${prompt}"
+${langInstruction || ''}
+
+Generate the perfect, refined prompt. Return ONLY the prompt text, no explanations or meta-commentary.
+
+Perfect Prompt:`;
+
+    const contents = image ? {
+        parts: [
+            { text: generationPrompt },
+            { inlineData: { data: image.data, mimeType: image.mimeType } }
+        ]
+    } : generationPrompt;
+
+    try {
+        const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+            model: 'gemini-3.1-pro-preview',
+            contents: contents,
+            config: { temperature: 0.7 }
+        }), 3, 1000, onStatusUpdate, "Prompt Generation");
+        return response.text;
+    } catch (error) {
+        console.error("Error generating perfect prompt:", error);
         throw error;
     }
 };

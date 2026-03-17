@@ -30,6 +30,7 @@ export interface Translations {
   imageTip: string;
   storyTip: string;
   videoTip: string;
+  promptTip: string;
 
   // Tool Tabs
   clarifications: string;
@@ -37,6 +38,7 @@ export interface Translations {
   imageAttributes: string;
   storyAttributes: string;
   videoAttributes: string;
+  promptAttributes: string;
 
   // Pending Changes
   pendingChanges: (count: number) => string;
@@ -76,6 +78,13 @@ export interface Translations {
   billingDescription: string;
   learnBilling: string;
   selectApiKey: string;
+
+  // Prompt Creator
+  promptCreator: string;
+  promptGeneration: string;
+  craftingPrompt: string;
+  perfectPromptTitle: string;
+  promptWillAppear: string;
 
   // Status
   connectionUnstable: (action: string, attempt: number, total: number) => string;
@@ -130,6 +139,7 @@ export const translations: Record<Language, Translations> = {
     imageTip: 'Describe the scene, style, lighting, colors, and mood. Be specific about composition and camera angle.',
     storyTip: 'Describe characters, setting, conflict, and tone. Mention genre and narrative perspective.',
     videoTip: 'Describe action, camera movement, pacing, and atmosphere. Specify duration feel and transitions.',
+    promptTip: 'Describe your idea roughly. Alfred will analyze it and craft a perfect, detailed prompt you can use anywhere.',
 
     // Tool Tabs
     clarifications: 'Clarifications',
@@ -137,6 +147,7 @@ export const translations: Record<Language, Translations> = {
     imageAttributes: 'Image Attributes',
     storyAttributes: 'Story Attributes',
     videoAttributes: 'Video Attributes',
+    promptAttributes: 'Prompt Attributes',
 
     // Pending Changes
     pendingChanges: (count: number) => `${count} pending change${count !== 1 ? 's' : ''}`,
@@ -182,6 +193,13 @@ export const translations: Record<Language, Translations> = {
     billingDescription: 'Generating videos with Veo requires a paid API Key from Google Cloud. Please select a key to continue.',
     learnBilling: 'Learn more about billing',
     selectApiKey: 'Select API Key',
+
+    // Prompt Creator
+    promptCreator: 'Prompt',
+    promptGeneration: 'Prompt Creator',
+    craftingPrompt: 'Crafting the perfect prompt...',
+    perfectPromptTitle: 'Your Perfect Prompt',
+    promptWillAppear: 'Your crafted prompt will appear here.',
 
     // Status
     connectionUnstable: (action, attempt, total) => `Connection unstable or rate limited during ${action}. Retrying (${attempt}/${total})...`,
@@ -235,6 +253,7 @@ export const translations: Record<Language, Translations> = {
     imageTip: 'Descrivi la scena, lo stile, l\'illuminazione, i colori e l\'atmosfera. Sii specifico su composizione e angolazione.',
     storyTip: 'Descrivi personaggi, ambientazione, conflitto e tono. Indica genere e prospettiva narrativa.',
     videoTip: 'Descrivi l\'azione, il movimento della camera, il ritmo e l\'atmosfera. Specifica durata e transizioni.',
+    promptTip: 'Descrivi la tua idea in modo approssimativo. Alfred la analizzer\u00e0 e creer\u00e0 un prompt perfetto e dettagliato da usare ovunque.',
 
     // Tool Tabs
     clarifications: 'Chiarimenti',
@@ -242,6 +261,7 @@ export const translations: Record<Language, Translations> = {
     imageAttributes: 'Attributi Immagine',
     storyAttributes: 'Attributi Storia',
     videoAttributes: 'Attributi Video',
+    promptAttributes: 'Attributi Prompt',
 
     // Pending Changes
     pendingChanges: (count: number) => `${count} modific${count !== 1 ? 'he' : 'a'} in sospeso`,
@@ -287,6 +307,13 @@ export const translations: Record<Language, Translations> = {
     billingDescription: 'La generazione video con Veo richiede una chiave API a pagamento di Google Cloud. Seleziona una chiave per continuare.',
     learnBilling: 'Scopri di piu\' sulla fatturazione',
     selectApiKey: 'Seleziona Chiave API',
+
+    // Prompt Creator
+    promptCreator: 'Prompt',
+    promptGeneration: 'Creatore di Prompt',
+    craftingPrompt: 'Creazione del prompt perfetto...',
+    perfectPromptTitle: 'Il Tuo Prompt Perfetto',
+    promptWillAppear: 'Il tuo prompt creato apparir\u00e0 qui.',
 
     // Status
     connectionUnstable: (action, attempt, total) => `Connessione instabile durante ${action}. Nuovo tentativo (${attempt}/${total})...`,
