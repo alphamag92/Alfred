@@ -490,7 +490,8 @@ function App() {
                 onBack={() => handleModeChange('image')}
               />
             ) : null}
-            <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0 ${mode === 'localize' || mode === 'magicpixels' ? 'hidden' : ''}`}>
+            {mode !== 'localize' && mode !== 'magicpixels' && (
+            <div className="flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0">
 
             {/* Left Column (Editor) */}
             <div className={`flex flex-col gap-0 bg-white dark:bg-zinc-900 lg:rounded-xl lg:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden lg:flex'} h-full overflow-y-auto`}>
@@ -606,6 +607,7 @@ function App() {
             </div>
 
             </div>
+            )}
         </main>
 
         {/* Mobile Bottom Navigation - Fixed */}
