@@ -16,6 +16,7 @@ import {
   generateImagesFromPrompt,
   generateStoryFromPrompt,
   generateVideosFromPrompt,
+  generatePerfectPrompt,
   refinePromptWithAllUpdates,
   updateApiKey,
 } from './services/geminiService';
@@ -24,7 +25,7 @@ import { BeliefState, Clarification, GraphUpdate, Attribute, AttachedImage } fro
 // Removed duplicate global declaration for AIStudio to fix "Duplicate identifier" errors.
 // Accessing window.aistudio via (window as any) to bypass type check if global type is missing or conflicting.
 
-type Mode = 'image' | 'story' | 'video';
+type Mode = 'image' | 'story' | 'video' | 'prompt';
 type ToolTab = 'clarify' | 'graph' | 'attributes';
 type MobileView = 'editor' | 'preview';
 
@@ -53,7 +54,8 @@ function App() {
   const [images, setImages] = useState<string[]>([]);
   const [story, setStory] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
-  const [galleryErrors, setGalleryErrors] = useState<Record<Mode, string | null>>({ image: null, story: null, video: null });
+  const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
+  const [galleryErrors, setGalleryErrors] = useState<Record<Mode, string | null>>({ image: null, story: null, video: null, prompt: null });
   const [requiresApiKey, setRequiresApiKey] = useState(false);
 
   const [beliefGraph, setBeliefGraph] = useState<BeliefState | null>(null);
@@ -244,6 +246,7 @@ function App() {
         if (requestMode === 'image') setImages([]);
         else if (requestMode === 'story') setStory(null);
         else if (requestMode === 'video') setVideo(null);
+        else if (requestMode === 'prompt') setGeneratedPrompt(null);
     }
 
     setIsOutdated(false);
@@ -290,6 +293,9 @@ function App() {
 
                     const generatedVideo = await generateVideosFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage);
                     if (isGenCurrent()) setVideo(generatedVideo);
+                } else if (requestMode === 'prompt') {
+                    const perfectPrompt = await generatePerfectPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, langInstruction);
+                    if (isGenCurrent()) setGeneratedPrompt(perfectPrompt);
                 }
             } catch (error: any) {
                 if (isGenCurrent()) {
@@ -491,7 +497,7 @@ function App() {
                         <ToolTabButton label={t.clarifications} tab="clarify" current={activeToolTab} />
                         <ToolTabButton label={t.beliefGraph} tab="graph" current={activeToolTab} />
                         <ToolTabButton
-                            label={mode === 'image' ? t.imageAttributes : (mode === 'video' ? t.videoAttributes : t.storyAttributes)}
+                            label={mode === 'image' ? t.imageAttributes : (mode === 'video' ? t.videoAttributes : (mode === 'prompt' ? t.promptAttributes : t.storyAttributes))}
                             tab="attributes"
                             current={activeToolTab}
                         />
@@ -567,6 +573,7 @@ function App() {
                     images={images}
                     story={story}
                     video={video}
+                    generatedPrompt={generatedPrompt}
                     mode={mode}
                     isLoading={isGenerating}
                     error={galleryErrors[mode]}

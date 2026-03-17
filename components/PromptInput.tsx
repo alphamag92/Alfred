@@ -16,8 +16,8 @@ interface PromptInputProps {
   isLoading: boolean;
   isGenerating: boolean;
   isFirstRun: boolean;
-  mode: 'image' | 'story' | 'video';
-  setMode: (mode: 'image' | 'story' | 'video') => void;
+  mode: 'image' | 'story' | 'video' | 'prompt';
+  setMode: (mode: 'image' | 'story' | 'video' | 'prompt') => void;
   attachedImage: AttachedImage | null;
   setAttachedImage: (image: AttachedImage | null) => void;
 }
@@ -37,8 +37,6 @@ const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useLanguage();
-  const [showTips, setShowTips] = useState(false);
-
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -55,34 +53,11 @@ const PromptInput: React.FC<PromptInputProps> = ({
     reader.readAsDataURL(file);
   };
 
-  const currentTip = mode === 'image' ? t.imageTip : mode === 'story' ? t.storyTip : t.videoTip;
-
   return (
     <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col transition-colors duration-200">
       <div className="px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex justify-between items-center">
         <h2 className="text-base md:text-lg font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">{t.prompt}</h2>
-        <button
-          onClick={() => setShowTips(!showTips)}
-          className={`text-xs px-3 py-2 rounded-lg transition-colors flex items-center gap-1 min-h-[44px] ${
-            showTips
-              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-          }`}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-          </svg>
-          Tips
-        </button>
       </div>
-
-      {showTips && (
-        <div className="px-4 py-2.5 bg-blue-50/80 dark:bg-blue-950/30 border-b border-blue-100 dark:border-blue-900/50">
-          <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-            <span className="font-semibold">{t.promptTipsTitle}:</span> {currentTip}
-          </p>
-        </div>
-      )}
 
       <div className="p-3 md:p-5 flex flex-col gap-3 md:gap-4">
         <div
@@ -185,6 +160,20 @@ const PromptInput: React.FC<PromptInputProps> = ({
                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                      </svg>
                     <span>{t.video}</span>
+                </button>
+                <button
+                    onClick={() => setMode('prompt')}
+                    disabled={isLoading}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap min-h-[44px] ${
+                        mode === 'prompt'
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                    }`}
+                >
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                     </svg>
+                    <span>{t.promptCreator}</span>
                 </button>
             </div>
 

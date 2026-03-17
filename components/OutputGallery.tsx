@@ -16,7 +16,8 @@ interface OutputDisplayProps {
   images: string[];
   story: string | null;
   video: string | null;
-  mode: 'image' | 'story' | 'video';
+  generatedPrompt?: string | null;
+  mode: 'image' | 'story' | 'video' | 'prompt';
   isLoading: boolean;
   error: string | null;
   isOutdated: boolean;
@@ -28,6 +29,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
     images,
     story,
     video,
+    generatedPrompt,
     mode,
     isLoading,
     error,
@@ -39,6 +41,8 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
   const { t } = useLanguage();
 
   const placeholderCount = 4;
+
+  const [promptCopied, setPromptCopied] = useState(false);
 
   const downloadStory = () => {
     if (!story) return;
@@ -57,6 +61,26 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
   const copyStory = () => {
       if (!story) return;
       navigator.clipboard.writeText(story);
+  };
+
+  const copyPrompt = () => {
+      if (!generatedPrompt) return;
+      navigator.clipboard.writeText(generatedPrompt);
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
+  };
+
+  const downloadPrompt = () => {
+      if (!generatedPrompt) return;
+      const element = document.createElement("a");
+      const file = new Blob([generatedPrompt], {type: 'text/plain'});
+      const url = URL.createObjectURL(file);
+      element.href = url;
+      element.download = "perfect_prompt.txt";
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+      setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
   const renderImageContent = () => {
@@ -180,6 +204,75 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
       );
   };
 
+  const renderPromptContent = () => {
+      if (isLoading) {
+          return (
+              <div className="h-full flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400">
+                   <svg className="animate-spin h-8 w-8 text-zinc-400 dark:text-zinc-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span className="mt-2 text-sm">{t.craftingPrompt}</span>
+              </div>
+          );
+      }
+      if (generatedPrompt) {
+          return (
+              <div className="p-4 space-y-4">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border border-blue-200 dark:border-blue-800 rounded-xl p-5 relative">
+                      <div className="absolute top-3 right-3 flex gap-2">
+                          <button
+                              onClick={copyPrompt}
+                              className="p-2 bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-700 rounded-lg shadow-sm border border-blue-200 dark:border-blue-800 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+                              title={t.copyToClipboard}
+                          >
+                              {promptCopied ? (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                              ) : (
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                  </svg>
+                              )}
+                          </button>
+                          <button
+                              onClick={downloadPrompt}
+                              className="p-2 bg-white/80 dark:bg-zinc-800/80 hover:bg-white dark:hover:bg-zinc-700 rounded-lg shadow-sm border border-blue-200 dark:border-blue-800 transition-colors min-h-[40px] min-w-[40px] flex items-center justify-center"
+                              title={t.downloadText}
+                          >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                          </button>
+                      </div>
+                      <div className="pr-24">
+                          <div className="flex items-center gap-2 mb-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                              </svg>
+                              <h3 className="font-bold text-blue-800 dark:text-blue-200">{t.perfectPromptTitle}</h3>
+                          </div>
+                      </div>
+                      <div className="prose prose-sm dark:prose-invert max-w-none">
+                          {generatedPrompt.split('\n').map((paragraph, index) => (
+                              <p key={index} className="text-zinc-800 dark:text-zinc-200 leading-relaxed">{paragraph}</p>
+                          ))}
+                      </div>
+                  </div>
+              </div>
+          );
+      }
+      return (
+          <div className="h-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-xl flex flex-col items-center justify-center text-center text-zinc-400 dark:text-zinc-500 p-8 shadow-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-3 text-zinc-300 dark:text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <p className="text-sm font-medium">{t.promptWillAppear}</p>
+          </div>
+      );
+  };
+
   const renderError = () => (
       <div className="h-full bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-xl flex flex-col items-center justify-center p-4 text-center">
           <ErrorIcon />
@@ -223,7 +316,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
         <div className="bg-white dark:bg-zinc-900 rounded-xl p-4 h-full border border-zinc-200 dark:border-zinc-800 flex flex-col relative overflow-hidden transition-colors duration-200">
             <div className="flex justify-between items-center mb-4 border-b border-zinc-100 dark:border-zinc-800 pb-2 flex-shrink-0">
                 <h2 className="text-lg font-semibold text-zinc-700 dark:text-zinc-200">
-                    {mode === 'image' ? t.imageGeneration : (mode === 'video' ? t.videoGeneration : t.creativeWriting)}
+                    {mode === 'image' ? t.imageGeneration : (mode === 'video' ? t.videoGeneration : (mode === 'prompt' ? t.promptGeneration : t.creativeWriting))}
                 </h2>
                 {mode === 'story' && story && !isLoading && (
                     <div className="flex gap-2">
@@ -242,27 +335,29 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
             </div>
 
             <div className="flex-grow min-h-0 relative">
-                {error ? renderError() : (
-                    mode === 'image'
-                    ? (
+                {error ? renderError() :
+                    mode === 'image' ? (
                         <div className="h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4">
                                 {renderImageContent()}
                             </div>
                         </div>
-                    )
-                    : (mode === 'video' ? (
+                    ) : mode === 'video' ? (
                          <div className="h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
                             {renderVideoContent()}
+                        </div>
+                    ) : mode === 'prompt' ? (
+                        <div className="h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
+                            {renderPromptContent()}
                         </div>
                     ) : (
                         <div className="h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-zinc-300 dark:scrollbar-thumb-zinc-600">
                             {renderStoryContent()}
                         </div>
-                    ))
-                )}
+                    )
+                }
 
-                {isOutdated && !isLoading && !requiresApiKey && (images.length > 0 || story || video) && (
+                {isOutdated && !isLoading && !requiresApiKey && (images.length > 0 || story || video || generatedPrompt) && (
                     <div className="absolute inset-0 bg-white/60 dark:bg-zinc-900/60 backdrop-blur-[2px] flex items-center justify-center z-10 rounded-xl transition-all duration-300 pointer-events-none">
                         <div className="bg-white dark:bg-zinc-800 px-6 py-4 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-600 text-center transform scale-100 pointer-events-auto">
                             <div className="text-amber-500 mb-2 flex justify-center">
