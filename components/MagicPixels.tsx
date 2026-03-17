@@ -36,7 +36,7 @@ const ADJUSTMENT_PRESETS = [
   { key: 'enhance',   labelKey: 'mpAdjEnhance',      prompt: 'Enhance sharpness, clarity, and fine texture details throughout the entire image.' },
   { key: 'warm',      labelKey: 'mpAdjWarm',         prompt: 'Apply a warm golden-hour lighting effect with soft amber and golden tones.' },
   { key: 'studio',    labelKey: 'mpAdjStudio',       prompt: 'Apply dramatic professional studio lighting with strong highlights and deep controlled shadows.' },
-  { key: 'remove_bg', labelKey: 'mpAdjRemoveBg',     prompt: 'Remove the background completely, isolating only the main subject against a transparent or white background.' },
+  { key: 'remove_bg', labelKey: 'mpAdjRemoveBg',     prompt: 'Remove the background completely and replace it with full transparency (alpha = 0). Isolate only the main subject with clean, precise edges. Output the result as a PNG image with a transparent background.' },
 ] as const;
 
 const FILTER_PRESETS = [
@@ -77,6 +77,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   // Adjust state
   const [customAdjustment, setCustomAdjustment] = useState('');
+  const [featherSize, setFeatherSize] = useState(30);
 
   // Filter state
   const [customFilter, setCustomFilter] = useState('');
@@ -190,6 +191,94 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
     try {
       const result = await transformImage(currentImage, instruction);
       applyEdit(result);
+    } catch (err: any) {
+      setEditError(err?.message || t.mpEditFailed);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // ── Feather Edges (client-side, transparent) ────────────────────────────────
+
+  const handleApplyFeather = async () => {
+    if (!currentImage || isProcessing) return;
+    setIsProcessing(true);
+    setEditError(null);
+    try {
+      const img = new Image();
+      img.src = currentImage;
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error('Failed to load image'));
+      });
+
+      const w = img.width;
+      const h = img.height;
+      const f = Math.min(featherSize, Math.floor(Math.min(w, h) / 2));
+
+      // Draw original image
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0);
+
+      // Build a feather mask on a separate canvas
+      const mask = document.createElement('canvas');
+      mask.width = w;
+      mask.height = h;
+      const mc = mask.getContext('2d')!;
+
+      // Start fully transparent (black = 0 alpha when used as mask)
+      mc.clearRect(0, 0, w, h);
+
+      // Centre — fully opaque
+      mc.fillStyle = '#fff';
+      mc.fillRect(f, f, w - 2 * f, h - 2 * f);
+
+      // Edge gradients (top, bottom, left, right)
+      const top = mc.createLinearGradient(0, 0, 0, f);
+      top.addColorStop(0, 'rgba(255,255,255,0)');
+      top.addColorStop(1, 'rgba(255,255,255,1)');
+      mc.fillStyle = top;
+      mc.fillRect(f, 0, w - 2 * f, f);
+
+      const bottom = mc.createLinearGradient(0, h - f, 0, h);
+      bottom.addColorStop(0, 'rgba(255,255,255,1)');
+      bottom.addColorStop(1, 'rgba(255,255,255,0)');
+      mc.fillStyle = bottom;
+      mc.fillRect(f, h - f, w - 2 * f, f);
+
+      const left = mc.createLinearGradient(0, 0, f, 0);
+      left.addColorStop(0, 'rgba(255,255,255,0)');
+      left.addColorStop(1, 'rgba(255,255,255,1)');
+      mc.fillStyle = left;
+      mc.fillRect(0, f, f, h - 2 * f);
+
+      const right = mc.createLinearGradient(w - f, 0, w, 0);
+      right.addColorStop(0, 'rgba(255,255,255,1)');
+      right.addColorStop(1, 'rgba(255,255,255,0)');
+      mc.fillStyle = right;
+      mc.fillRect(w - f, f, f, h - 2 * f);
+
+      // Corner radial gradients
+      const corners: [number, number][] = [[f, f], [w - f, f], [f, h - f], [w - f, h - f]];
+      const rects: [number, number][] = [[0, 0], [w - f, 0], [0, h - f], [w - f, h - f]];
+      for (let i = 0; i < 4; i++) {
+        const [cx, cy] = corners[i];
+        const [rx, ry] = rects[i];
+        const rg = mc.createRadialGradient(cx, cy, 0, cx, cy, f);
+        rg.addColorStop(0, 'rgba(255,255,255,1)');
+        rg.addColorStop(1, 'rgba(255,255,255,0)');
+        mc.fillStyle = rg;
+        mc.fillRect(rx, ry, f, f);
+      }
+
+      // Apply mask → transparent feather
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(mask, 0, 0);
+
+      applyEdit(canvas.toDataURL('image/png'));
     } catch (err: any) {
       setEditError(err?.message || t.mpEditFailed);
     } finally {
@@ -391,6 +480,31 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
         ))}
       </div>
 
+      {/* Feather Edges */}
+      <div className="pt-2 border-t border-zinc-200 dark:border-zinc-700">
+        <p className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-2">{t.mpAdjFeatherEdges}</p>
+        <div className="flex items-center gap-3 mb-2">
+          <input
+            type="range"
+            min={5}
+            max={200}
+            step={1}
+            value={featherSize}
+            onChange={e => setFeatherSize(Number(e.target.value))}
+            disabled={isProcessing}
+            className="flex-1 h-1.5 accent-blue-600 bg-zinc-200 dark:bg-zinc-700 rounded-full appearance-none cursor-pointer disabled:opacity-50"
+          />
+          <span className="text-xs font-mono text-zinc-500 dark:text-zinc-400 w-14 text-right tabular-nums">{featherSize} {t.mpFeatherSizePx}</span>
+        </div>
+        <button
+          onClick={handleApplyFeather}
+          disabled={isProcessing}
+          className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isProcessing ? <><Spinner className="h-4 w-4" /><span>{t.mpProcessing}</span></> : t.mpApplyFeather}
+        </button>
+      </div>
+
       <div className="pt-1">
         <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-1.5">{t.mpCustomLabel}</p>
         <div className="flex gap-2">
@@ -517,6 +631,11 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
             onMouseMove={handleCropMouseMove}
             onMouseUp={handleCropMouseUp}
             onMouseLeave={handleCropMouseUp}
+            style={{
+              backgroundImage: 'repeating-conic-gradient(#d4d4d8 0% 25%, transparent 0% 50%)',
+              backgroundSize: '16px 16px',
+              borderRadius: '0.5rem',
+            }}
           >
             <img
               src={currentImage!}
