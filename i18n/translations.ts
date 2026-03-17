@@ -157,6 +157,10 @@ export interface Translations {
   mpEditFailed: string;
   mpUndo: string;
   mpRedo: string;
+  mpAdjFeatherEdges: string;
+  mpFeatherSizeLabel: string;
+  mpFeatherSizePx: string;
+  mpApplyFeather: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -323,6 +327,10 @@ export const translations: Record<Language, Translations> = {
     mpEditFailed: 'Edit failed. Please try again.',
     mpUndo: 'Undo',
     mpRedo: 'Redo',
+    mpAdjFeatherEdges: 'Feather Edges',
+    mpFeatherSizeLabel: 'Feather size',
+    mpFeatherSizePx: 'px',
+    mpApplyFeather: 'Apply Feather',
   },
 
   it: {
@@ -488,5 +496,9 @@ export const translations: Record<Language, Translations> = {
     mpEditFailed: 'Modifica fallita. Riprova.',
     mpUndo: 'Annulla',
     mpRedo: 'Ripristina',
+    mpAdjFeatherEdges: 'Sfuma Bordi',
+    mpFeatherSizeLabel: 'Grandezza sfumatura',
+    mpFeatherSizePx: 'px',
+    mpApplyFeather: 'Applica Sfumatura',
   },
 };
