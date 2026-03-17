@@ -448,6 +448,8 @@ function App() {
             toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
             onSelectKey={handleSelectApiKey}
             apiKeySet={apiKeySet}
+            mode={mode}
+            onModeChange={handleModeChange}
         />
 
         {/* Retry/Status Notification */}
