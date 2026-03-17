@@ -78,14 +78,13 @@ export const retouchImageAtPoint = async (
 
   return withRetry(async () => {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-05-20',
+      model: 'gemini-3.1-flash-image-preview',
       contents: {
         parts: [
           { inlineData: { data, mimeType } },
           { text: instruction },
         ],
       },
-      config: { responseModalities: ['IMAGE', 'TEXT'] },
     });
 
     if (response.candidates?.[0]?.content?.parts) {
@@ -115,14 +114,13 @@ export const transformImage = async (
 
   return withRetry(async () => {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-preview-05-20',
+      model: 'gemini-3.1-flash-image-preview',
       contents: {
         parts: [
           { inlineData: { data, mimeType } },
           { text: fullInstruction },
         ],
       },
-      config: { responseModalities: ['IMAGE', 'TEXT'] },
     });
 
     if (response.candidates?.[0]?.content?.parts) {
