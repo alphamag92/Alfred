@@ -33,9 +33,9 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
     <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
       <div className="flex items-center gap-2.5">
         <img
-          src={`${import.meta.env.BASE_URL}logo.svg`}
+          src={`${import.meta.env.BASE_URL}alfred.webp`}
           alt="Alfred Logo"
-          className="h-8 w-8 dark:invert"
+          className="h-8 w-8 rounded-lg"
         />
         <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
       </div>
