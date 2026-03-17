@@ -114,6 +114,23 @@ export interface Translations {
   localize: string;
   adLocalizer: string;
   backToAlfred: string;
+  alUploadYourAd: string;
+  alClickToUpload: string;
+  alRightsDisclaimer: string;
+  alTargetMarket: string;
+  alSearchCountries: string;
+  alNoMatchingCountries: string;
+  alTargetLanguages: string;
+  alAspectRatio: string;
+  alLocalizing: string;
+  alLocalizeAd: string;
+  alLocalizedResults: (done: number, total: number) => string;
+  alExportAll: string;
+  alReset: string;
+  alReadyToScale: string;
+  alReadyDesc: string;
+  alNoImageReturned: string;
+  alFailedForMarket: (market: string) => string;
 
   // Magic Pixels
   magicPixels: string;
@@ -284,6 +301,23 @@ export const translations: Record<Language, Translations> = {
     localize: 'Localize',
     adLocalizer: 'Ad Localizer',
     backToAlfred: 'Back to Alfred',
+    alUploadYourAd: '1. Upload Your Ad',
+    alClickToUpload: 'Click to upload your ad image',
+    alRightsDisclaimer: 'By using this feature, you confirm that you have the necessary rights to any content that you upload.',
+    alTargetMarket: '2. Target Market (Countries)',
+    alSearchCountries: 'Type to search countries...',
+    alNoMatchingCountries: 'No matching countries',
+    alTargetLanguages: '3. Target Languages',
+    alAspectRatio: '4. Aspect Ratio',
+    alLocalizing: 'Localizing...',
+    alLocalizeAd: 'Localize Ad',
+    alLocalizedResults: (done, total) => `Localized Results (${done}/${total})`,
+    alExportAll: 'Export All',
+    alReset: 'Reset',
+    alReadyToScale: 'Ready to Scale',
+    alReadyDesc: 'Upload your ad, select target markets or languages, then click Localize to generate localized versions instantly.',
+    alNoImageReturned: 'No image returned',
+    alFailedForMarket: (market) => `Failed to generate for ${market}`,
 
     // Magic Pixels
     magicPixels: 'Magic Pixels',
@@ -453,6 +487,23 @@ export const translations: Record<Language, Translations> = {
     localize: 'Localizza',
     adLocalizer: 'Ad Localizer',
     backToAlfred: 'Torna ad Alfred',
+    alUploadYourAd: '1. Carica il Tuo Annuncio',
+    alClickToUpload: 'Clicca per caricare l\'immagine dell\'annuncio',
+    alRightsDisclaimer: 'Utilizzando questa funzione, confermi di possedere i diritti necessari sui contenuti caricati.',
+    alTargetMarket: '2. Mercato di Destinazione (Paesi)',
+    alSearchCountries: 'Cerca paesi...',
+    alNoMatchingCountries: 'Nessun paese trovato',
+    alTargetLanguages: '3. Lingue di Destinazione',
+    alAspectRatio: '4. Proporzioni',
+    alLocalizing: 'Localizzazione...',
+    alLocalizeAd: 'Localizza Annuncio',
+    alLocalizedResults: (done, total) => `Risultati Localizzati (${done}/${total})`,
+    alExportAll: 'Esporta Tutto',
+    alReset: 'Reimposta',
+    alReadyToScale: 'Pronto per la Scala',
+    alReadyDesc: 'Carica il tuo annuncio, seleziona i mercati o le lingue di destinazione, poi clicca Localizza per generare le versioni localizzate.',
+    alNoImageReturned: 'Nessuna immagine restituita',
+    alFailedForMarket: (market) => `Generazione fallita per ${market}`,
 
     // Magic Pixels
     magicPixels: 'Magic Pixels',
