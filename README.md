@@ -1,6 +1,10 @@
-# Proactive Co-Creator
+<div align="center">
+  <img src="public/logo.svg" alt="Alfred Logo" width="120" height="156" />
+  <h1>Alfred</h1>
+  <p>An AI-powered creative assistant that helps you craft the perfect prompt and generate <strong>images</strong>, <strong>stories</strong>, and <strong>videos</strong> using Google Gemini.</p>
+</div>
 
-An AI-powered creative tool that helps you craft the perfect prompt and generate **images**, **stories**, and **videos** using Google Gemini.
+---
 
 ## Features
 
@@ -38,9 +42,9 @@ npm install
 
 ### Configuration
 
-Set your Gemini API key using one of these methods:
-- Click the **API Key** button in the header
-- Set `GEMINI_API_KEY` in a `.env.local` file
+Set your Gemini API key by clicking the **API Key** button in the header. The key is stored securely in your browser's localStorage.
+
+Alternatively, set `GEMINI_API_KEY` in a `.env.local` file for development.
 
 ### Run Locally
 

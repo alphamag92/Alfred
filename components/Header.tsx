@@ -11,9 +11,10 @@ interface HeaderProps {
     isDarkMode: boolean;
     toggleDarkMode: () => void;
     onSelectKey: () => void;
+    apiKeySet: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey }) => {
+const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey, apiKeySet }) => {
   const { language, setLanguage, t, outputLanguage, setOutputLanguage } = useLanguage();
   const [showLangMenu, setShowLangMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -30,15 +31,26 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
 
   return (
     <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
-      <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+      <div className="flex items-center gap-2.5">
+        <img
+          src={`${import.meta.env.BASE_URL}logo.svg`}
+          alt="Alfred Logo"
+          className="h-8 w-8 dark:invert"
+        />
+        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+      </div>
       <div className="flex items-center gap-2">
         <button
           onClick={onSelectKey}
-          className="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 flex items-center gap-2"
-          title="Login to Google to select API Key"
+          className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 flex items-center gap-2 ${
+            apiKeySet
+              ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
+              : 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500'
+          }`}
+          title={t.apiKey}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
           </svg>
           {t.apiKey}
         </button>

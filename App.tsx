@@ -76,6 +76,9 @@ function App() {
 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [statusNotification, setStatusNotification] = useState<string | null>(null);
+  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [apiKeySet, setApiKeySet] = useState(() => !!localStorage.getItem('GEMINI_API_KEY'));
 
   useEffect(() => {
     if (isGenerating) {
@@ -344,14 +347,22 @@ function App() {
              setRequiresApiKey(false);
           }
       } else {
-          const key = window.prompt("Please enter your Gemini API Key:");
-          if (key) {
-              updateApiKey(key);
-              if (requiresApiKey) {
-                  setRequiresApiKey(false);
-              }
+          setApiKeyInput(localStorage.getItem('GEMINI_API_KEY') || '');
+          setShowApiKeyModal(true);
+      }
+  };
+
+  const handleApiKeySave = () => {
+      const key = apiKeyInput.trim();
+      if (key) {
+          updateApiKey(key);
+          setApiKeySet(true);
+          if (requiresApiKey) {
+              setRequiresApiKey(false);
           }
       }
+      setShowApiKeyModal(false);
+      setApiKeyInput('');
   };
 
   const handleApplyAllUpdates = async () => {
@@ -427,6 +438,7 @@ function App() {
             isDarkMode={isDarkMode}
             toggleDarkMode={() => setIsDarkMode(!isDarkMode)}
             onSelectKey={handleSelectApiKey}
+            apiKeySet={apiKeySet}
         />
 
         {/* Retry/Status Notification */}
@@ -592,6 +604,75 @@ function App() {
                 <span className="text-[10px] font-bold uppercase tracking-wide">{t.preview}</span>
             </button>
         </div>
+
+        {/* API Key Modal */}
+        {showApiKeyModal && (
+          <div
+            className="fixed inset-0 z-[3000] bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm"
+            onClick={() => setShowApiKeyModal(false)}
+          >
+            <div
+              className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-md w-full p-6 relative border border-zinc-200 dark:border-zinc-800"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowApiKeyModal(false)}
+                className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                aria-label="Close"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              <div className="mb-5">
+                <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                  {t.apiKeyModalTitle}
+                </h2>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                  {t.apiKeyModalDesc}
+                </p>
+              </div>
+
+              <input
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleApiKeySave(); }}
+                placeholder="AIza..."
+                autoFocus
+                className="w-full border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              />
+
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={() => setShowApiKeyModal(false)}
+                  className="flex-1 py-2.5 px-4 rounded-xl border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                >
+                  {t.cancel}
+                </button>
+                <button
+                  onClick={handleApiKeySave}
+                  disabled={!apiKeyInput.trim()}
+                  className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {t.save}
+                </button>
+              </div>
+
+              <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-3 text-center">
+                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                  {t.getApiKey}
+                </a>
+                {' '}&mdash;{' '}
+                {t.storedInBrowser}
+              </p>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

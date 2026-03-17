@@ -1,5 +1,5 @@
 {
-  "name": "PRO3.1active Co-Creator",
-  "description": "An intelligent agent that collaborates with users to refine prompts for content creation, using a belief graph and interactive questions, powered by the Gemini API.",
+  "name": "Alfred",
+  "description": "An AI-powered creative assistant that helps craft perfect prompts and generate images, stories, and videos using Google Gemini.",
   "requestFramePermissions": []
 }

@@ -89,12 +89,20 @@ export interface Translations {
   outputLangAuto: string;
   outputLangEn: string;
   outputLangIt: string;
+
+  // API Key Modal
+  apiKeyModalTitle: string;
+  apiKeyModalDesc: string;
+  cancel: string;
+  save: string;
+  getApiKey: string;
+  storedInBrowser: string;
 }
 
 export const translations: Record<Language, Translations> = {
   en: {
     // Header
-    appTitle: 'Proactive Co-Creator',
+    appTitle: 'Alfred',
     apiKey: 'API Key',
     switchToLight: 'Switch to Light Mode',
     switchToDark: 'Switch to Dark Mode',
@@ -187,11 +195,19 @@ export const translations: Record<Language, Translations> = {
     outputLangAuto: 'Auto',
     outputLangEn: 'English',
     outputLangIt: 'Italian',
+
+    // API Key Modal
+    apiKeyModalTitle: 'Gemini API Key',
+    apiKeyModalDesc: 'Enter your Gemini API key to generate content.',
+    cancel: 'Cancel',
+    save: 'Save',
+    getApiKey: 'Get an API key',
+    storedInBrowser: 'stored only in your browser',
   },
 
   it: {
     // Header
-    appTitle: 'Proactive Co-Creator',
+    appTitle: 'Alfred',
     apiKey: 'Chiave API',
     switchToLight: 'Passa a Tema Chiaro',
     switchToDark: 'Passa a Tema Scuro',
@@ -284,5 +300,13 @@ export const translations: Record<Language, Translations> = {
     outputLangAuto: 'Auto',
     outputLangEn: 'Inglese',
     outputLangIt: 'Italiano',
+
+    // API Key Modal
+    apiKeyModalTitle: 'Chiave API Gemini',
+    apiKeyModalDesc: 'Inserisci la tua chiave API Gemini per generare contenuti.',
+    cancel: 'Annulla',
+    save: 'Salva',
+    getApiKey: 'Ottieni una chiave API',
+    storedInBrowser: 'salvata solo nel tuo browser',
   },
 };
