@@ -34,7 +34,7 @@ type MobileView = 'editor' | 'preview';
 function App() {
   const { t, getOutputLanguageInstruction } = useLanguage();
 
-  const [prompt, setPrompt] = useState('a cat hosting a party for its animal friends');
+  const [prompt, setPrompt] = useState('');
   const [attachedImage, setAttachedImage] = useState<AttachedImage | null>(null);
   const [attachedDocuments, setAttachedDocuments] = useState<AttachedDocument[]>([]);
 
