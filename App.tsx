@@ -10,6 +10,7 @@ import ClarificationCard from './components/ClarificationCard';
 import BeliefGraph from './components/BeliefGraph';
 import OutputDisplay from './components/OutputGallery';
 import AdLocalizer from './components/AdLocalizer';
+import MagicPixels from './components/MagicPixels';
 import { useLanguage } from './i18n/LanguageContext';
 import {
   parsePromptToBeliefGraph,
@@ -26,7 +27,7 @@ import { BeliefState, Clarification, GraphUpdate, Attribute, AttachedImage } fro
 // Removed duplicate global declaration for AIStudio to fix "Duplicate identifier" errors.
 // Accessing window.aistudio via (window as any) to bypass type check if global type is missing or conflicting.
 
-type Mode = 'image' | 'story' | 'video' | 'prompt' | 'localize';
+type Mode = 'image' | 'story' | 'video' | 'prompt' | 'localize' | 'magicpixels';
 type ToolTab = 'clarify' | 'graph' | 'attributes';
 type MobileView = 'editor' | 'preview';
 
@@ -56,7 +57,8 @@ function App() {
   const [story, setStory] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
   const [generatedPrompt, setGeneratedPrompt] = useState<string | null>(null);
-  const [galleryErrors, setGalleryErrors] = useState<Record<Mode, string | null>>({ image: null, story: null, video: null, prompt: null, localize: null });
+  const [galleryErrors, setGalleryErrors] = useState<Record<Mode, string | null>>({ image: null, story: null, video: null, prompt: null, localize: null, magicpixels: null });
+  const [magicPixelsImage, setMagicPixelsImage] = useState<string | null>(null);
   const [requiresApiKey, setRequiresApiKey] = useState(false);
 
   const [beliefGraph, setBeliefGraph] = useState<BeliefState | null>(null);
@@ -133,6 +135,11 @@ function App() {
 
     // Reset key requirement as it depends on the specific generation trigger
     setRequiresApiKey(false);
+  };
+
+  const handleSendToMagicPixels = (image: string) => {
+    setMagicPixelsImage(image);
+    handleModeChange('magicpixels');
   };
 
   const refreshAnalysis = useCallback(async (currentPrompt: string, currentAnsweredQuestions: string[], currentMode: Mode) => {
@@ -320,7 +327,7 @@ function App() {
   }, [refreshAnalysis, handleStatusUpdate, attachedImage, getOutputLanguageInstruction]);
 
   const handlePromptSubmit = useCallback(() => {
-    if (mode === 'localize') return;
+    if (mode === 'localize' || mode === 'magicpixels') return;
     setHasGenerated(true);
 
     // Check if prompt is identical to what we last analyzed.
@@ -340,7 +347,7 @@ function App() {
   }, [prompt, mode, lastAnalyzedPrompt, lastAnalyzedMode, answeredQuestions, processRequest]);
 
   const handleAnalyzeOnly = useCallback(() => {
-     if (mode === 'localize') return;
+     if (mode === 'localize' || mode === 'magicpixels') return;
      // Force a fresh analysis but skip generation
      const newAnsweredQuestions: string[] = [];
      setAnsweredQuestions(newAnsweredQuestions);
@@ -477,7 +484,13 @@ function App() {
             {mode === 'localize' ? (
               <AdLocalizer onBack={() => handleModeChange('image')} />
             ) : null}
-            <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0 ${mode === 'localize' ? 'hidden' : ''}`}>
+            {mode === 'magicpixels' ? (
+              <MagicPixels
+                initialImage={magicPixelsImage}
+                onBack={() => handleModeChange('image')}
+              />
+            ) : null}
+            <div className={`flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0 ${mode === 'localize' || mode === 'magicpixels' ? 'hidden' : ''}`}>
 
             {/* Left Column (Editor) */}
             <div className={`flex flex-col gap-0 bg-white dark:bg-zinc-900 lg:rounded-xl lg:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden lg:flex'} h-full overflow-y-auto`}>
@@ -582,12 +595,13 @@ function App() {
                     story={story}
                     video={video}
                     generatedPrompt={generatedPrompt}
-                    mode={mode}
+                    mode={mode as 'image' | 'story' | 'video' | 'prompt'}
                     isLoading={isGenerating}
                     error={galleryErrors[mode]}
                     isOutdated={isOutdated}
                     requiresApiKey={requiresApiKey}
                     onSelectKey={handleSelectApiKey}
+                    onSendToMagicPixels={handleSendToMagicPixels}
                 />
             </div>
 
@@ -596,7 +610,7 @@ function App() {
 
         {/* Mobile Bottom Navigation - Fixed */}
         <div
-            className={`lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0 ${mode === 'localize' ? 'hidden' : ''}`}
+            className={`lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0 ${mode === 'localize' || mode === 'magicpixels' ? 'hidden' : ''}`}
             style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
         >
             <button

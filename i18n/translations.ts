@@ -111,6 +111,49 @@ export interface Translations {
   localize: string;
   adLocalizer: string;
   backToAlfred: string;
+
+  // Magic Pixels
+  magicPixels: string;
+  editInMagicPixels: string;
+  mpSubtitle: string;
+  mpDropZone: string;
+  mpDropZoneHint: string;
+  mpChooseFile: string;
+  mpCapRetouchTitle: string;
+  mpCapRetouchDesc: string;
+  mpCapFilterTitle: string;
+  mpCapFilterDesc: string;
+  mpCapAdjustTitle: string;
+  mpCapAdjustDesc: string;
+  mpTabRetouch: string;
+  mpTabAdjust: string;
+  mpTabFilter: string;
+  mpTabCrop: string;
+  mpRetouchInstruction: string;
+  mpRetouchPointSelected: string;
+  mpRetouchPlaceholder: string;
+  mpApplyRetouch: string;
+  mpCustomLabel: string;
+  mpCustomAdjustPlaceholder: string;
+  mpCustomFilterPlaceholder: string;
+  mpAdjBlurBg: string;
+  mpAdjEnhance: string;
+  mpAdjWarm: string;
+  mpAdjStudio: string;
+  mpAdjRemoveBg: string;
+  mpFilterSynthwave: string;
+  mpFilterAnime: string;
+  mpFilterLomo: string;
+  mpFilterGlitch: string;
+  mpCropAspectLabel: string;
+  mpCropFree: string;
+  mpCropInstruction: string;
+  mpApplyCrop: string;
+  mpCropClear: string;
+  mpProcessing: string;
+  mpEditFailed: string;
+  mpUndo: string;
+  mpRedo: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -231,6 +274,49 @@ export const translations: Record<Language, Translations> = {
     localize: 'Localize',
     adLocalizer: 'Ad Localizer',
     backToAlfred: 'Back to Alfred',
+
+    // Magic Pixels
+    magicPixels: 'Magic Pixels',
+    editInMagicPixels: 'Edit in Magic Pixels',
+    mpSubtitle: 'AI-Powered Photo Editing, Simplified.',
+    mpDropZone: 'Drop your image here',
+    mpDropZoneHint: 'or click to choose a file — PNG, JPG, WEBP',
+    mpChooseFile: 'Choose image',
+    mpCapRetouchTitle: 'Precise Retouching',
+    mpCapRetouchDesc: 'Click any point to apply targeted edits',
+    mpCapFilterTitle: 'Creative Filters',
+    mpCapFilterDesc: 'Instantly transform the mood and style',
+    mpCapAdjustTitle: 'Pro Adjustments',
+    mpCapAdjustDesc: 'Lighting, blur, tone and more',
+    mpTabRetouch: 'Retouch',
+    mpTabAdjust: 'Adjust',
+    mpTabFilter: 'Filter',
+    mpTabCrop: 'Crop',
+    mpRetouchInstruction: 'Click a point on the image to select it, then describe what to change.',
+    mpRetouchPointSelected: 'Point selected at {x}% × {y}%. Describe your change below.',
+    mpRetouchPlaceholder: 'e.g. Remove the blemish, change shirt to red…',
+    mpApplyRetouch: 'Apply Retouch',
+    mpCustomLabel: 'Or describe a custom change',
+    mpCustomAdjustPlaceholder: 'e.g. Add a rain effect…',
+    mpCustomFilterPlaceholder: 'e.g. Vintage film look…',
+    mpAdjBlurBg: 'Blur Background',
+    mpAdjEnhance: 'Enhance Details',
+    mpAdjWarm: 'Warmer Lighting',
+    mpAdjStudio: 'Studio Light',
+    mpAdjRemoveBg: 'Remove Background',
+    mpFilterSynthwave: 'Synthwave',
+    mpFilterAnime: 'Anime',
+    mpFilterLomo: 'Lomo',
+    mpFilterGlitch: 'Glitch',
+    mpCropAspectLabel: 'Aspect ratio',
+    mpCropFree: 'Free',
+    mpCropInstruction: 'Drag on the image to select the crop area, then click Apply.',
+    mpApplyCrop: 'Apply Crop',
+    mpCropClear: 'Clear selection',
+    mpProcessing: 'Processing…',
+    mpEditFailed: 'Edit failed. Please try again.',
+    mpUndo: 'Undo',
+    mpRedo: 'Redo',
   },
 
   it: {
@@ -350,5 +436,48 @@ export const translations: Record<Language, Translations> = {
     localize: 'Localizza',
     adLocalizer: 'Ad Localizer',
     backToAlfred: 'Torna ad Alfred',
+
+    // Magic Pixels
+    magicPixels: 'Magic Pixels',
+    editInMagicPixels: 'Modifica in Magic Pixels',
+    mpSubtitle: 'Photo editing AI, semplificato.',
+    mpDropZone: 'Trascina qui la tua immagine',
+    mpDropZoneHint: 'oppure clicca per scegliere un file — PNG, JPG, WEBP',
+    mpChooseFile: 'Scegli immagine',
+    mpCapRetouchTitle: 'Ritocco Preciso',
+    mpCapRetouchDesc: 'Clicca un punto per modifiche mirate',
+    mpCapFilterTitle: 'Filtri Creativi',
+    mpCapFilterDesc: 'Trasforma umore e stile in un istante',
+    mpCapAdjustTitle: 'Regolazioni Pro',
+    mpCapAdjustDesc: 'Luce, sfocatura, toni e molto altro',
+    mpTabRetouch: 'Ritocco',
+    mpTabAdjust: 'Regola',
+    mpTabFilter: 'Filtro',
+    mpTabCrop: 'Ritaglia',
+    mpRetouchInstruction: 'Clicca un punto sull\'immagine per selezionarlo, poi descrivi cosa cambiare.',
+    mpRetouchPointSelected: 'Punto selezionato a {x}% × {y}%. Descrivi la modifica qui sotto.',
+    mpRetouchPlaceholder: 'es. Rimuovi l\'imperfezione, cambia la maglietta in rosso…',
+    mpApplyRetouch: 'Applica Ritocco',
+    mpCustomLabel: 'Oppure descrivi una modifica personalizzata',
+    mpCustomAdjustPlaceholder: 'es. Aggiungi effetto pioggia…',
+    mpCustomFilterPlaceholder: 'es. Aspetto pellicola vintage…',
+    mpAdjBlurBg: 'Sfoca Sfondo',
+    mpAdjEnhance: 'Migliora Dettagli',
+    mpAdjWarm: 'Luce Calda',
+    mpAdjStudio: 'Luce Studio',
+    mpAdjRemoveBg: 'Rimuovi Sfondo',
+    mpFilterSynthwave: 'Synthwave',
+    mpFilterAnime: 'Anime',
+    mpFilterLomo: 'Lomo',
+    mpFilterGlitch: 'Glitch',
+    mpCropAspectLabel: 'Proporzioni',
+    mpCropFree: 'Libero',
+    mpCropInstruction: 'Trascina sull\'immagine per selezionare l\'area, poi clicca Applica.',
+    mpApplyCrop: 'Applica Ritaglio',
+    mpCropClear: 'Cancella selezione',
+    mpProcessing: 'Elaborazione…',
+    mpEditFailed: 'Modifica fallita. Riprova.',
+    mpUndo: 'Annulla',
+    mpRedo: 'Ripristina',
   },
 };

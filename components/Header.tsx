@@ -8,7 +8,7 @@ import { Globe } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { Language } from '../i18n/translations';
 
-type Mode = 'image' | 'story' | 'video' | 'prompt' | 'localize';
+type Mode = 'image' | 'story' | 'video' | 'prompt' | 'localize' | 'magicpixels';
 
 interface HeaderProps {
     isDarkMode: boolean;
@@ -46,8 +46,8 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
         <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
       </div>
 
-      {/* Center: Ad Localizer (desktop only) */}
-      <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2">
+      {/* Center: tool buttons (desktop only) */}
+      <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2 gap-2">
         <button
           onClick={() => onModeChange(mode === 'localize' ? 'image' : 'localize')}
           className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[36px] ${
@@ -58,6 +58,20 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
         >
           <Globe className="h-4 w-4" />
           <span>Ad Localizer</span>
+        </button>
+
+        <button
+          onClick={() => onModeChange(mode === 'magicpixels' ? 'image' : 'magicpixels')}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[36px] ${
+            mode === 'magicpixels'
+              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-md'
+              : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
+          <span>{t.magicPixels}</span>
         </button>
       </div>
 
@@ -74,6 +88,21 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
           title="Ad Localizer"
         >
           <Globe className="h-5 w-5" />
+        </button>
+
+        {/* Mobile: Magic Pixels icon */}
+        <button
+          onClick={() => onModeChange(mode === 'magicpixels' ? 'image' : 'magicpixels')}
+          className={`sm:hidden p-2.5 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[44px] min-w-[44px] flex items-center justify-center ${
+            mode === 'magicpixels'
+              ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white'
+              : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+          }`}
+          title={t.magicPixels}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+          </svg>
         </button>
         <button
           onClick={onSelectKey}
