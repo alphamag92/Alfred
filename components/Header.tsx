@@ -35,31 +35,35 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
   }, []);
 
   return (
-    <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 px-3 py-2.5 sm:p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
-      <div className="flex items-center gap-2 sm:gap-2.5">
+    <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 px-3 py-2.5 sm:p-4 flex items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
+      {/* Left: logo + title */}
+      <div className="flex items-center gap-2 sm:gap-2.5 flex-1">
         <img
           src={`${import.meta.env.BASE_URL}alfred.webp`}
           alt="Alfred Logo"
           className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg"
         />
         <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+      </div>
 
-        {/* Nav: Ad Localizer */}
+      {/* Center: Ad Localizer (desktop only) */}
+      <div className="hidden sm:flex absolute left-1/2 -translate-x-1/2">
         <button
           onClick={() => onModeChange(mode === 'localize' ? 'image' : 'localize')}
-          className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[36px] ml-2 ${
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[36px] ${
             mode === 'localize'
               ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
           }`}
-          title={t.localize}
         >
           <Globe className="h-4 w-4" />
-          <span>{t.localize}</span>
+          <span>Ad Localizer</span>
         </button>
       </div>
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        {/* Mobile: Ad Localizer */}
+
+      {/* Right: controls */}
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-1 justify-end">
+        {/* Mobile: Ad Localizer icon */}
         <button
           onClick={() => onModeChange(mode === 'localize' ? 'image' : 'localize')}
           className={`sm:hidden p-2.5 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[44px] min-w-[44px] flex items-center justify-center ${
@@ -67,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
               ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900'
               : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800'
           }`}
-          title={t.localize}
+          title="Ad Localizer"
         >
           <Globe className="h-5 w-5" />
         </button>
