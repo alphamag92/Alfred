@@ -4,7 +4,7 @@
 */
 
 import React, { useRef, useState } from 'react';
-import { ImagePlus, X } from 'lucide-react';
+import { ImagePlus, X, Globe } from 'lucide-react';
 import { AttachedImage } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -16,8 +16,8 @@ interface PromptInputProps {
   isLoading: boolean;
   isGenerating: boolean;
   isFirstRun: boolean;
-  mode: 'image' | 'story' | 'video' | 'prompt';
-  setMode: (mode: 'image' | 'story' | 'video' | 'prompt') => void;
+  mode: 'image' | 'story' | 'video' | 'prompt' | 'localize';
+  setMode: (mode: 'image' | 'story' | 'video' | 'prompt' | 'localize') => void;
   attachedImage: AttachedImage | null;
   setAttachedImage: (image: AttachedImage | null) => void;
 }
@@ -174,6 +174,18 @@ const PromptInput: React.FC<PromptInputProps> = ({
                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                      </svg>
                     <span>{t.promptCreator}</span>
+                </button>
+                <button
+                    onClick={() => setMode('localize')}
+                    disabled={isLoading}
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap min-h-[44px] ${
+                        mode === 'localize'
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
+                    }`}
+                >
+                    <Globe className="h-4 w-4" />
+                    <span>{t.localize}</span>
                 </button>
             </div>
 

@@ -106,6 +106,11 @@ export interface Translations {
   save: string;
   getApiKey: string;
   storedInBrowser: string;
+
+  // Ad Localizer
+  localize: string;
+  adLocalizer: string;
+  backToAlfred: string;
 }
 
 export const translations: Record<Language, Translations> = {
@@ -221,6 +226,11 @@ export const translations: Record<Language, Translations> = {
     save: 'Save',
     getApiKey: 'Get an API key',
     storedInBrowser: 'stored only in your browser',
+
+    // Ad Localizer
+    localize: 'Localize',
+    adLocalizer: 'Ad Localizer',
+    backToAlfred: 'Back to Alfred',
   },
 
   it: {
@@ -335,5 +345,10 @@ export const translations: Record<Language, Translations> = {
     save: 'Salva',
     getApiKey: 'Ottieni una chiave API',
     storedInBrowser: 'salvata solo nel tuo browser',
+
+    // Ad Localizer
+    localize: 'Localizza',
+    adLocalizer: 'Ad Localizer',
+    backToAlfred: 'Torna ad Alfred',
   },
 };
