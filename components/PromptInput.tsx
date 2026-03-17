@@ -63,7 +63,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
         <h2 className="text-base md:text-lg font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">{t.prompt}</h2>
         <button
           onClick={() => setShowTips(!showTips)}
-          className={`text-xs px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 ${
+          className={`text-xs px-3 py-2 rounded-lg transition-colors flex items-center gap-1 min-h-[44px] ${
             showTips
               ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
               : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
@@ -109,10 +109,10 @@ const PromptInput: React.FC<PromptInputProps> = ({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
-                className="p-1.5 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50"
+                className="p-2 bg-white dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-300 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-700 transition-colors disabled:opacity-50 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 title={t.attachImage}
               >
-                <ImagePlus size={18} />
+                <ImagePlus size={20} />
               </button>
             </div>
         </div>
@@ -147,7 +147,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 <button
                     onClick={() => setMode('image')}
                     disabled={isLoading}
-                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap min-h-[44px] ${
                         mode === 'image'
                         ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
@@ -161,7 +161,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                 <button
                     onClick={() => setMode('story')}
                     disabled={isLoading}
-                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap min-h-[44px] ${
                         mode === 'story'
                         ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
@@ -175,7 +175,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                  <button
                     onClick={() => setMode('video')}
                     disabled={isLoading}
-                    className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap ${
+                    className={`flex items-center space-x-1 px-3 py-2 rounded-lg transition-all text-xs md:text-sm font-medium disabled:pointer-events-none whitespace-nowrap min-h-[44px] ${
                         mode === 'video'
                         ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm ring-1 ring-zinc-200 dark:ring-zinc-600'
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
@@ -198,7 +198,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                     onAnalyze();
                 }}
                 disabled={isLoading || !prompt}
-                className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:bg-zinc-50 dark:disabled:bg-zinc-900 disabled:text-zinc-400 text-zinc-800 dark:text-zinc-200 font-semibold py-1.5 md:py-2 px-3 md:px-4 rounded-xl flex items-center justify-center transition-all shadow-sm text-sm md:text-base disabled:pointer-events-none border border-zinc-200 dark:border-zinc-700"
+                className="bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 disabled:bg-zinc-50 dark:disabled:bg-zinc-900 disabled:text-zinc-400 text-zinc-800 dark:text-zinc-200 font-semibold py-2.5 md:py-2 px-3 md:px-4 rounded-xl flex items-center justify-center transition-all shadow-sm text-sm md:text-base disabled:pointer-events-none border border-zinc-200 dark:border-zinc-700 min-h-[44px]"
                 >
                     <span>{t.analyzePrompt}</span>
                 </button>
@@ -209,7 +209,7 @@ const PromptInput: React.FC<PromptInputProps> = ({
                     onSubmit();
                 }}
                 disabled={isLoading || !prompt}
-                className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:pointer-events-none text-white dark:text-zinc-900 font-semibold py-1.5 md:py-2 px-4 md:px-6 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 text-sm md:text-base"
+                className="bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:hover:bg-white disabled:bg-zinc-200 dark:disabled:bg-zinc-800 disabled:text-zinc-400 dark:disabled:text-zinc-600 disabled:pointer-events-none text-white dark:text-zinc-900 font-semibold py-2.5 md:py-2 px-4 md:px-6 rounded-xl flex items-center justify-center space-x-2 transition-all shadow-sm hover:shadow hover:-translate-y-0.5 active:translate-y-0 text-sm md:text-base min-h-[44px]"
                 >
                 {isGenerating && (
                     <svg className="animate-spin h-4 w-4 md:h-5 md:w-5 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

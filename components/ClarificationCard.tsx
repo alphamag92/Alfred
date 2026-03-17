@@ -128,7 +128,7 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                                             key={option}
                                             onClick={() => handleSelectOption(item.question, option)}
                                             disabled={isLoading}
-                                            className={`text-xs py-1.5 px-3 rounded-full border transition-colors ${
+                                            className={`text-xs py-2 px-3.5 rounded-full border transition-colors min-h-[44px] ${
                                                 pendingAnswers[item.question] === option
                                                     ? 'bg-zinc-900 border-zinc-900 text-white dark:bg-zinc-100 dark:border-zinc-100 dark:text-zinc-900 font-medium shadow-sm'
                                                     : 'bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800'
@@ -144,7 +144,7 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                                     onChange={(e) => handleCustomAnswerChange(item.question, e.target.value)}
                                     placeholder={t.orTypeAnswer}
                                     disabled={isLoading}
-                                    className="w-full text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 bg-zinc-50 dark:bg-zinc-950/50 focus:bg-white dark:focus:bg-zinc-900 text-zinc-800 dark:text-zinc-200 transition-all"
+                                    className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2.5 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 bg-zinc-50 dark:bg-zinc-950/50 focus:bg-white dark:focus:bg-zinc-900 text-zinc-800 dark:text-zinc-200 transition-all min-h-[44px]"
                                 />
                             </div>
                         ))
@@ -156,7 +156,7 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                         <button
                             onClick={onRefresh}
                             disabled={isLoading}
-                            className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-xl text-sm font-medium transition-all border border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-zinc-50 dark:bg-zinc-900 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-xl text-sm font-medium transition-all border border-zinc-200 dark:border-zinc-700 shadow-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
                             title={t.refreshQuestions}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

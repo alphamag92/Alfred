@@ -123,7 +123,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
     if (video) {
         return (
             <div className="flex flex-col items-center justify-center min-h-full w-full p-4">
-                <div className="w-full max-w-lg bg-black rounded-xl overflow-hidden shadow-lg border border-zinc-800 relative group shrink-0">
+                <div className="w-full max-w-sm sm:max-w-lg bg-black rounded-xl overflow-hidden shadow-lg border border-zinc-800 relative group shrink-0">
                      <video controls className="w-full h-auto" src={video}>
                         Your browser does not support the video tag.
                      </video>
@@ -206,7 +206,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
                 </p>
                 <button
                     onClick={onSelectKey}
-                    className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors shadow-md flex items-center gap-2"
+                    className="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors shadow-md flex items-center gap-2 min-h-[48px]"
                 >
                     <span>{t.selectApiKey}</span>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -227,12 +227,12 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
                 </h2>
                 {mode === 'story' && story && !isLoading && (
                     <div className="flex gap-2">
-                        <button onClick={copyStory} className="text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400" title={t.copyToClipboard}>
+                        <button onClick={copyStory} className="text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" title={t.copyToClipboard}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                             </svg>
                         </button>
-                        <button onClick={downloadStory} className="text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400" title={t.downloadText}>
+                        <button onClick={downloadStory} className="text-zinc-500 hover:text-blue-600 dark:text-zinc-400 dark:hover:text-blue-400 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center" title={t.downloadText}>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
@@ -283,7 +283,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
             <div className="fixed inset-0 z-[2000] bg-black/90 flex justify-center p-4 backdrop-blur-sm overflow-y-auto" onClick={() => setSelectedImage(null)}>
                 <button
                     onClick={() => setSelectedImage(null)}
-                    className="fixed top-4 right-4 z-[2010] text-white/80 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-2 transition-all backdrop-blur-sm"
+                    className="fixed top-4 right-4 z-[2010] text-white/80 hover:text-white bg-black/40 hover:bg-black/60 rounded-full p-3 transition-all backdrop-blur-sm min-h-[48px] min-w-[48px] flex items-center justify-center"
                     aria-label="Close Preview"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -302,7 +302,7 @@ const OutputDisplay: React.FC<OutputDisplayProps> = ({
                         <a
                             href={selectedImage}
                             download="generated-image.jpg"
-                            className="bg-white text-zinc-900 px-6 py-2 rounded-full font-semibold hover:bg-zinc-100 transition-colors flex items-center gap-2 shadow-lg"
+                            className="bg-white text-zinc-900 px-6 py-3 rounded-full font-semibold hover:bg-zinc-100 transition-colors flex items-center gap-2 shadow-lg min-h-[48px]"
                         >
                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

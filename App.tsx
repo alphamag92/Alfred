@@ -422,7 +422,7 @@ function App() {
   const ToolTabButton = ({ label, tab, current }: { label: string, tab: ToolTab, current: ToolTab }) => (
       <button
         onClick={() => setActiveToolTab(tab)}
-        className={`flex-1 py-3 text-xs sm:text-sm font-semibold text-center transition-colors relative focus:outline-none ${current === tab ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-zinc-900 border-b-2 border-blue-600 dark:border-blue-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800'}`}
+        className={`flex-1 min-h-[44px] py-3 text-xs sm:text-sm font-semibold text-center transition-colors relative focus:outline-none ${current === tab ? 'text-blue-600 dark:text-blue-400 bg-white dark:bg-zinc-900 border-b-2 border-blue-600 dark:border-blue-400' : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800'}`}
       >
         {label}
       </button>
@@ -462,11 +462,11 @@ function App() {
             </div>
         )}
 
-        <main className="flex-1 flex flex-col w-full max-w-screen-2xl mx-auto xl:p-6 xl:pt-4 xl:pb-6 overflow-hidden min-h-0">
-            <div className="flex-1 flex flex-col xl:grid xl:grid-cols-2 xl:gap-6 min-h-0">
+        <main className="flex-1 flex flex-col w-full max-w-screen-2xl mx-auto lg:p-6 lg:pt-4 lg:pb-6 overflow-hidden min-h-0">
+            <div className="flex-1 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 min-h-0">
 
             {/* Left Column (Editor) */}
-            <div className={`flex flex-col gap-0 bg-white dark:bg-zinc-900 xl:rounded-xl xl:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden xl:flex'} h-full overflow-y-auto`}>
+            <div className={`flex flex-col gap-0 bg-white dark:bg-zinc-900 lg:rounded-xl lg:border border-zinc-200 dark:border-zinc-800 shadow-sm transition-colors duration-200 ${mobileView === 'editor' ? 'flex flex-1' : 'hidden lg:flex'} h-full overflow-y-auto`}>
 
                 {/* 1. Prompt Input Area */}
                 <div className="flex-shrink-0 z-10 border-b border-zinc-200 dark:border-zinc-800">
@@ -499,7 +499,7 @@ function App() {
                 </div>
 
                 {/* 3. Tool Content */}
-                <div className="relative bg-zinc-50/30 dark:bg-zinc-950/30 flex-1 overflow-hidden flex flex-col min-h-[450px] pb-[3.5rem] xl:pb-0">
+                <div className="relative bg-zinc-50/30 dark:bg-zinc-950/30 flex-1 overflow-hidden flex flex-col min-h-[300px] sm:min-h-[400px] lg:min-h-[450px] pb-[3.5rem] lg:pb-0">
 
                     {totalUpdateCount > 0 && (
                         <div className="flex-shrink-0 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800 p-3 flex justify-between items-center animate-fade-in z-20">
@@ -562,7 +562,7 @@ function App() {
             </div>
 
             {/* Right Column (Preview) */}
-            <div className={`flex flex-col xl:flex ${mobileView === 'preview' ? 'flex' : 'hidden mt-4 xl:mt-0'} flex-1 h-full min-h-0 pb-[3.5rem] xl:pb-0`}>
+            <div className={`flex flex-col lg:flex ${mobileView === 'preview' ? 'flex' : 'hidden mt-4 lg:mt-0'} flex-1 h-full min-h-0 pb-[3.5rem] lg:pb-0`}>
                 <OutputDisplay
                     images={images}
                     story={story}
@@ -581,12 +581,12 @@ function App() {
 
         {/* Mobile Bottom Navigation - Fixed */}
         <div
-            className="xl:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0"
+            className="lg:hidden bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 flex justify-around p-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-[200] fixed bottom-0 left-0 right-0"
             style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
         >
             <button
                 onClick={() => setMobileView('editor')}
-                className={`flex-1 flex flex-col items-center justify-center py-1 rounded-lg transition-colors ${mobileView === 'editor' ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}
+                className={`flex-1 flex flex-col items-center justify-center min-h-[48px] py-2 rounded-lg transition-colors ${mobileView === 'editor' ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -596,7 +596,7 @@ function App() {
 
             <button
                 onClick={() => setMobileView('preview')}
-                className={`flex-1 flex flex-col items-center justify-center py-1 rounded-lg transition-colors ${mobileView === 'preview' ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}
+                className={`flex-1 flex flex-col items-center justify-center min-h-[48px] py-2 rounded-lg transition-colors ${mobileView === 'preview' ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-500 dark:text-zinc-400'}`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

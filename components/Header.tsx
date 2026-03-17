@@ -30,19 +30,19 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
   }, []);
 
   return (
-    <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
-      <div className="flex items-center gap-2.5">
+    <header className="bg-white/80 backdrop-blur-md dark:bg-zinc-950/80 px-3 py-2.5 sm:p-4 flex justify-between items-center border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors duration-200">
+      <div className="flex items-center gap-2 sm:gap-2.5">
         <img
           src={`${import.meta.env.BASE_URL}alfred.webp`}
           alt="Alfred Logo"
-          className="h-8 w-8 rounded-lg"
+          className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg"
         />
-        <h1 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+        <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         <button
           onClick={onSelectKey}
-          className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 flex items-center gap-2 ${
+          className={`px-2.5 sm:px-3 py-2 sm:py-1.5 rounded-xl text-xs sm:text-sm font-medium transition-colors focus:outline-none focus:ring-2 flex items-center gap-1.5 sm:gap-2 min-h-[44px] ${
             apiKeySet
               ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
               : 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500'
@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowLangMenu(!showLangMenu)}
-            className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 flex items-center gap-1.5"
+            className="p-2.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 flex items-center gap-1.5 min-h-[44px] min-w-[44px] justify-center"
             title={t.language}
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
 
         <button
           onClick={toggleDarkMode}
-          className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100"
+          className="p-2.5 sm:p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
           title={isDarkMode ? t.switchToLight : t.switchToDark}
         >
           {isDarkMode ? (
