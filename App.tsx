@@ -22,7 +22,7 @@ import {
   refinePromptWithAllUpdates,
   updateApiKey,
 } from './services/geminiService';
-import { BeliefState, Clarification, GraphUpdate, Attribute, AttachedImage } from './types';
+import { BeliefState, Clarification, GraphUpdate, Attribute, AttachedImage, AttachedDocument } from './types';
 
 // Removed duplicate global declaration for AIStudio to fix "Duplicate identifier" errors.
 // Accessing window.aistudio via (window as any) to bypass type check if global type is missing or conflicting.
@@ -36,6 +36,7 @@ function App() {
 
   const [prompt, setPrompt] = useState('a cat hosting a party for its animal friends');
   const [attachedImage, setAttachedImage] = useState<AttachedImage | null>(null);
+  const [attachedDocuments, setAttachedDocuments] = useState<AttachedDocument[]>([]);
 
   const [isGraphLoading, setIsGraphLoading] = useState(false);
   const [isAttributesLoading, setIsAttributesLoading] = useState(false);
@@ -157,7 +158,7 @@ function App() {
     setIsClarificationsLoading(true);
 
     // 1. Graph & Attributes Generation
-    const graphPromise = parsePromptToBeliefGraph(currentPrompt, currentMode as 'image' | 'story' | 'video' | 'prompt', safeStatusUpdate, attachedImage, langInstruction)
+    const graphPromise = parsePromptToBeliefGraph(currentPrompt, currentMode as 'image' | 'story' | 'video' | 'prompt', safeStatusUpdate, attachedImage, langInstruction, attachedDocuments)
         .then(graphStructure => {
             if (isCurrent()) {
                 if (graphStructure) setBeliefGraph(graphStructure);
@@ -174,7 +175,7 @@ function App() {
         });
 
     // 2. Clarifications Generation
-    const clarificationPromise = generateClarifications(currentPrompt, currentAnsweredQuestions, currentMode as 'image' | 'story' | 'video' | 'prompt', safeStatusUpdate, attachedImage, langInstruction)
+    const clarificationPromise = generateClarifications(currentPrompt, currentAnsweredQuestions, currentMode as 'image' | 'story' | 'video' | 'prompt', safeStatusUpdate, attachedImage, langInstruction, attachedDocuments)
         .then(generatedClarifications => {
             if (isCurrent()) setClarifications(generatedClarifications);
         })
@@ -193,7 +194,7 @@ function App() {
 
     // Return a promise that resolves when both tasks are complete (for processRequest await)
     return Promise.all([graphPromise, clarificationPromise]);
-  }, [handleStatusUpdate, attachedImage, getOutputLanguageInstruction]);
+  }, [handleStatusUpdate, attachedImage, attachedDocuments, getOutputLanguageInstruction]);
 
   const handleRefreshClarifications = useCallback(() => {
     // Increment analysis ID because clarifications are part of the analysis state
@@ -217,7 +218,7 @@ function App() {
     const currentPrompt = prompt;
     const excludeList = [...answeredQuestions, ...newSkipped];
 
-    generateClarifications(currentPrompt, excludeList, requestMode, safeStatusUpdate, attachedImage, langInstruction)
+    generateClarifications(currentPrompt, excludeList, requestMode, safeStatusUpdate, attachedImage, langInstruction, attachedDocuments)
         .then(newClarifications => {
             if (isCurrent()) setClarifications(newClarifications);
         })
@@ -228,7 +229,7 @@ function App() {
                  setStatusNotification(null);
              }
         });
-  }, [prompt, answeredQuestions, mode, clarifications, skippedQuestions, handleStatusUpdate, attachedImage, getOutputLanguageInstruction]);
+  }, [prompt, answeredQuestions, mode, clarifications, skippedQuestions, handleStatusUpdate, attachedImage, attachedDocuments, getOutputLanguageInstruction]);
 
   const processRequest = useCallback(async (
     currentPrompt: string,
@@ -280,10 +281,10 @@ function App() {
         generationPromise = (async () => {
             try {
                 if (requestMode === 'image') {
-                    const generatedImages = await generateImagesFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage);
+                    const generatedImages = await generateImagesFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, attachedDocuments);
                     if (isGenCurrent()) setImages(generatedImages);
                 } else if (requestMode === 'story') {
-                    const generatedStory = await generateStoryFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, langInstruction);
+                    const generatedStory = await generateStoryFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, langInstruction, attachedDocuments);
                     if (isGenCurrent()) setStory(generatedStory);
                 } else if (requestMode === 'video') {
                     // Check for API Key first (Veo requirement)
@@ -299,10 +300,10 @@ function App() {
                         }
                     }
 
-                    const generatedVideo = await generateVideosFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage);
+                    const generatedVideo = await generateVideosFromPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, attachedDocuments);
                     if (isGenCurrent()) setVideo(generatedVideo);
                 } else if (requestMode === 'prompt') {
-                    const perfectPrompt = await generatePerfectPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, langInstruction);
+                    const perfectPrompt = await generatePerfectPrompt(currentPrompt, safeGenStatusUpdate, attachedImage, langInstruction, attachedDocuments);
                     if (isGenCurrent()) setGeneratedPrompt(perfectPrompt);
                 }
             } catch (error: any) {
@@ -324,7 +325,7 @@ function App() {
         if (isGenCurrent() && !isGenerating) setStatusNotification(null);
     });
 
-  }, [refreshAnalysis, handleStatusUpdate, attachedImage, getOutputLanguageInstruction]);
+  }, [refreshAnalysis, handleStatusUpdate, attachedImage, attachedDocuments, getOutputLanguageInstruction]);
 
   const handlePromptSubmit = useCallback(() => {
     if (mode === 'localize' || mode === 'magicpixels') return;
@@ -411,7 +412,7 @@ function App() {
 
     try {
         // Use current prompt state to ensure we incorporate user manual edits
-        const newRefinedPrompt = await refinePromptWithAllUpdates(prompt, qaPairs, graphUpdates, safeStatusUpdate, attachedImage);
+        const newRefinedPrompt = await refinePromptWithAllUpdates(prompt, qaPairs, graphUpdates, safeStatusUpdate, attachedImage, attachedDocuments);
 
         if (!isCurrent()) return;
 
@@ -510,6 +511,8 @@ function App() {
                         setMode={handleModeChange}
                         attachedImage={attachedImage}
                         setAttachedImage={setAttachedImage}
+                        attachedDocuments={attachedDocuments}
+                        setAttachedDocuments={setAttachedDocuments}
                     />
                 </div>
 
