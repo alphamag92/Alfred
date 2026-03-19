@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+
 export type Language = 'en' | 'it';
 
 export interface Translations {

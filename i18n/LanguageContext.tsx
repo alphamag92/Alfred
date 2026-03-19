@@ -1,3 +1,8 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+*/
+
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Language, Translations, translations } from './translations';
 
