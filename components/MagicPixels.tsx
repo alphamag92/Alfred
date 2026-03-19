@@ -424,7 +424,7 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   const renderStartScreen = () => (
     <div
-      className={`flex-1 flex flex-col items-center justify-center p-6 md:p-12 transition-colors ${isDraggingOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+      className={`flex-1 flex flex-col items-center justify-start sm:justify-center overflow-y-auto p-6 md:p-12 transition-colors ${isDraggingOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
       onDragOver={(e) => { e.preventDefault(); setIsDraggingOver(true); }}
       onDragLeave={() => setIsDraggingOver(false)}
       onDrop={handleDrop}
