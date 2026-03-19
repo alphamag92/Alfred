@@ -147,6 +147,19 @@ The app decomposes your prompt into a belief graph of entities, attributes, and 
 
 ---
 
-## License
+## Credits & License
 
-Apache-2.0
+This project is a derivative work that integrates and builds upon the original
+code from the following Google AI Studio projects:
+
+- **Proactive Co-Creator** (Google LLC)
+- **Pixshop** (Google LLC)
+- **Global Kit Generator** (Google LLC)
+
+The original code has been modified to support a new unified user interface,
+mobile optimization, multilingual support, and the consolidation of features
+into a single application.
+
+This software is distributed under the [Apache License 2.0](LICENSE).
+Copyright on the original code segments belongs to the respective authors
+(Google LLC). See [CREDITS.md](CREDITS.md) for full attribution details.
