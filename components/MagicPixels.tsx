@@ -424,13 +424,13 @@ const MagicPixels: React.FC<MagicPixelsProps> = ({ initialImage, onBack }) => {
 
   const renderStartScreen = () => (
     <div
-      className={`flex-1 flex flex-col items-center justify-start sm:justify-center overflow-y-auto p-6 md:p-12 transition-colors ${isDraggingOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+      className={`flex-1 flex flex-col items-center overflow-y-auto p-6 md:p-12 transition-colors ${isDraggingOver ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
       onDragOver={(e) => { e.preventDefault(); setIsDraggingOver(true); }}
       onDragLeave={() => setIsDraggingOver(false)}
       onDrop={handleDrop}
     >
       <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileInput} />
-      <div className="max-w-md w-full text-center">
+      <div className="max-w-md w-full text-center my-auto">
         {/* Icon */}
         <div className="mb-6 flex justify-center">
           <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center shadow-lg">
