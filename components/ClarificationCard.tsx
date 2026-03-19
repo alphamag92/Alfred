@@ -150,8 +150,12 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
                                     value={pendingAnswers[item.question] && !item.options.includes(pendingAnswers[item.question]) ? pendingAnswers[item.question] : ''}
                                     onChange={(e) => handleCustomAnswerChange(item.question, e.target.value)}
                                     placeholder={t.orTypeAnswer}
-                                    disabled={isLoading}
-                                    className="w-full text-sm border border-zinc-200 dark:border-zinc-700 rounded-lg px-3 py-2.5 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100 bg-zinc-50 dark:bg-zinc-950/50 focus:bg-white dark:focus:bg-zinc-900 text-zinc-800 dark:text-zinc-200 transition-all min-h-[44px]"
+                                    disabled={isLoading || item.options.includes(pendingAnswers[item.question])}
+                                    className={`w-full text-sm border rounded-lg px-3 py-2.5 focus:outline-none focus:ring-1 transition-all min-h-[44px] ${
+                                        item.options.includes(pendingAnswers[item.question])
+                                            ? 'border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-400 dark:text-zinc-600 cursor-not-allowed opacity-60'
+                                            : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950/50 focus:bg-white dark:focus:bg-zinc-900 text-zinc-800 dark:text-zinc-200 focus:border-zinc-900 dark:focus:border-zinc-100 focus:ring-zinc-900 dark:focus:ring-zinc-100'
+                                    }`}
                                 />
                             </div>
                         ))
