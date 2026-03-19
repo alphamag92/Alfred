@@ -355,6 +355,7 @@ function App() {
      const newAnsweredQuestions: string[] = [];
      setAnsweredQuestions(newAnsweredQuestions);
      setClarifications([]);
+     setActiveToolTab('attributes');
      processRequest(prompt, newAnsweredQuestions, mode, false, true); // skipGeneration = true
   }, [prompt, mode, processRequest]);
 

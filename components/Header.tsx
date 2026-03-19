@@ -51,7 +51,8 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
         <img
           src={`${import.meta.env.BASE_URL}alfred.webp`}
           alt="Alfred Logo"
-          className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg"
+          className="h-7 w-auto sm:h-8 rounded-lg"
+          style={{ aspectRatio: 'auto' }}
         />
         <div className="hidden sm:flex flex-col leading-tight">
           <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>

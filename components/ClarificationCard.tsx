@@ -65,7 +65,14 @@ const ClarificationCard: React.FC<ClarificationCardProps> = ({
   const { t } = useLanguage();
 
   const handleSelectOption = (question: string, option: string) => {
-      setPendingAnswers(prev => ({ ...prev, [question]: option }));
+      setPendingAnswers(prev => {
+          if (prev[question] === option) {
+              const next = { ...prev };
+              delete next[question];
+              return next;
+          }
+          return { ...prev, [question]: option };
+      });
   };
 
   const handleCustomAnswerChange = (question: string, value: string) => {
