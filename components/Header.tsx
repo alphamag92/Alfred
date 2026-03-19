@@ -129,17 +129,19 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
       <div className="hidden sm:flex items-center gap-2 flex-1 justify-end">
         <button
           onClick={onSelectKey}
-          className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-colors focus:outline-none focus:ring-2 flex items-center gap-2 min-h-[36px] ${
-            apiKeySet
-              ? 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500'
-              : 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500'
-          }`}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 min-h-[36px]"
           title={t.apiKey}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
           </svg>
           <span>{t.apiKey}</span>
+          <span className="relative flex h-2.5 w-2.5 ml-0.5">
+            {apiKeySet && (
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+            )}
+            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${apiKeySet ? 'bg-green-500' : 'bg-amber-400'}`} />
+          </span>
         </button>
 
         {/* Language Selector — desktop */}
@@ -226,12 +228,17 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
           }`}
           aria-label="More options"
         >
-          {/* API key status dot */}
+          {/* API key status lamp */}
           <span className="relative">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
-            <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full border border-white dark:border-zinc-900 ${apiKeySet ? 'bg-green-500' : 'bg-blue-500'}`} />
+            <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+              {apiKeySet && (
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+              )}
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 border-[1.5px] border-white dark:border-zinc-900 ${apiKeySet ? 'bg-green-500' : 'bg-amber-400'}`} />
+            </span>
           </span>
         </button>
 
@@ -243,16 +250,18 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
             <div className="p-3 border-b border-zinc-100 dark:border-zinc-800">
               <button
                 onClick={() => { onSelectKey(); setShowMobileMenu(false); }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  apiKeySet
-                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40'
-                    : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40'
-                }`}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium transition-colors"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
-                <span>{apiKeySet ? t.apiKey + ' ✓' : t.apiKey}</span>
+                <span className="flex-1">{t.apiKey}</span>
+                <span className="relative flex h-2.5 w-2.5">
+                  {apiKeySet && (
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${apiKeySet ? 'bg-green-500' : 'bg-amber-400'}`} />
+                </span>
               </button>
             </div>
 
