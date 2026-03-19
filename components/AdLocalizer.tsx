@@ -178,9 +178,11 @@ const AdLocalizer: React.FC<AdLocalizerProps> = ({ onBack }) => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <div className="flex items-center gap-2">
-            <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-base md:text-lg font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">{t.adLocalizer}</h2>
+          <div className="flex items-center gap-2 flex-1 justify-center">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
+              <Globe className="h-3.5 w-3.5 text-white" />
+            </div>
+            <h2 className="text-sm sm:text-base font-bold text-zinc-900 dark:text-zinc-50">{t.adLocalizer}</h2>
           </div>
         </div>
 

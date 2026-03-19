@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/alfred.webp" alt="Alfred Logo" width="96" height="96" style="border-radius:16px" />
+  <img src="public/alfred.webp" alt="Alfred Logo" height="96" style="border-radius:16px" />
   <h1>Alfred</h1>
   <p>An AI-powered creative assistant that helps you craft the perfect prompt and generate <strong>images</strong>, <strong>stories</strong>, and <strong>videos</strong> — with built-in tools to <strong>localize ads</strong> and <strong>edit photos</strong> using Google Gemini.</p>
 </div>
