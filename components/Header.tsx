@@ -53,7 +53,17 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
           alt="Alfred Logo"
           className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg"
         />
-        <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight hidden sm:block">{t.appTitle}</h1>
+        <div className="hidden sm:flex flex-col leading-tight">
+          <h1 className="text-lg sm:text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">{t.appTitle}</h1>
+          <a
+            href="https://github.com/alphamag92"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+          >
+            © alphamag92
+          </a>
+        </div>
       </div>
 
       {/* Center: Navigation Menu */}
@@ -141,17 +151,17 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{t.language} UI</span>
               </div>
               <div className="px-2 pb-2 flex gap-1">
-                {(['en', 'it'] as Language[]).map(lang => (
+                {(['en', 'it', 'es'] as Language[]).map(lang => (
                   <button
                     key={lang}
                     onClick={() => { setLanguage(lang); }}
-                    className={`flex-1 text-sm py-1.5 px-3 rounded-lg font-medium transition-colors ${
+                    className={`flex-1 text-sm py-1.5 px-2 rounded-lg font-medium transition-colors ${
                       language === lang
                         ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
                         : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                     }`}
                   >
-                    {lang === 'en' ? 'English' : 'Italiano'}
+                    {lang === 'en' ? 'EN' : lang === 'it' ? 'IT' : 'ES'}
                   </button>
                 ))}
               </div>
@@ -162,8 +172,8 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
               <div className="px-3 pt-3 pb-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{t.outputLanguage}</span>
               </div>
-              <div className="px-2 pb-3 flex gap-1">
-                {(['auto', 'en', 'it'] as const).map(lang => (
+              <div className="px-2 pb-3 flex gap-1 flex-wrap">
+                {(['auto', 'en', 'it', 'es'] as const).map(lang => (
                   <button
                     key={lang}
                     onClick={() => { setOutputLanguage(lang); }}
@@ -173,7 +183,7 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
                         : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
                     }`}
                   >
-                    {lang === 'auto' ? t.outputLangAuto : lang === 'en' ? t.outputLangEn : t.outputLangIt}
+                    {lang === 'auto' ? t.outputLangAuto : lang === 'en' ? t.outputLangEn : lang === 'it' ? t.outputLangIt : t.outputLangEs}
                   </button>
                 ))}
               </div>

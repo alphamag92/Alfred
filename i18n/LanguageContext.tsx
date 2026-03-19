@@ -10,8 +10,8 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: Translations;
-  outputLanguage: 'auto' | 'en' | 'it';
-  setOutputLanguage: (lang: 'auto' | 'en' | 'it') => void;
+  outputLanguage: 'auto' | 'en' | 'it' | 'es';
+  setOutputLanguage: (lang: 'auto' | 'en' | 'it' | 'es') => void;
   getOutputLanguageInstruction: () => string;
 }
 
@@ -20,12 +20,12 @@ const LanguageContext = createContext<LanguageContextType | null>(null);
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('ui_language');
-    return (saved === 'it' ? 'it' : 'en') as Language;
+    return (saved === 'it' || saved === 'es' ? saved : 'en') as Language;
   });
 
-  const [outputLanguage, setOutputLanguageState] = useState<'auto' | 'en' | 'it'>(() => {
+  const [outputLanguage, setOutputLanguageState] = useState<'auto' | 'en' | 'it' | 'es'>(() => {
     const saved = localStorage.getItem('output_language');
-    return (saved === 'en' || saved === 'it') ? saved : 'auto';
+    return (saved === 'en' || saved === 'it' || saved === 'es') ? saved : 'auto';
   });
 
   const setLanguage = useCallback((lang: Language) => {
@@ -33,7 +33,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     localStorage.setItem('ui_language', lang);
   }, []);
 
-  const setOutputLanguage = useCallback((lang: 'auto' | 'en' | 'it') => {
+  const setOutputLanguage = useCallback((lang: 'auto' | 'en' | 'it' | 'es') => {
     setOutputLanguageState(lang);
     localStorage.setItem('output_language', lang);
   }, []);
@@ -42,6 +42,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const effectiveLang = outputLanguage === 'auto' ? language : outputLanguage;
     if (effectiveLang === 'en') return '\n\nIMPORTANT: Generate all output text (including questions, options, attribute names, entity names, descriptions, and values) in English.';
     if (effectiveLang === 'it') return '\n\nIMPORTANT: Generate all output text (including questions, options, attribute names, entity names, descriptions, and values) in Italian (Italiano).';
+    if (effectiveLang === 'es') return '\n\nIMPORTANT: Generate all output text (including questions, options, attribute names, entity names, descriptions, and values) in Spanish (Español).';
     return '';
   }, [outputLanguage, language]);
 

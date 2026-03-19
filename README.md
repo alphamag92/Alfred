@@ -36,8 +36,8 @@ A full-featured photo editor powered by Gemini, accessible directly from Alfred:
 - **Send from Alfred** — Hover over any generated image and click **"Edit in Magic Pixels"** to open it directly in the editor.
 
 ### Multilingual UI
-- **UI Language**: English / Italian
-- **Output Language**: Control the language of generated content (Auto, English, or Italian)
+- **UI Language**: English / Italian / Spanish
+- **Output Language**: Control the language of generated content (Auto, English, Italian, or Spanish)
 
 ### Other
 - Dark mode / Light mode toggle
@@ -72,7 +72,13 @@ npm install
 Click the **API Key** button in the top-right corner of the app and paste your key. It is stored in your browser's `localStorage` and never sent anywhere else.
 
 **Option B — via environment variable:**
-Create a `.env.local` file in the project root:
+Copy `.env.example` to `.env.local` and fill in your key:
+
+```bash
+cp .env.example .env.local
+```
+
+Then edit `.env.local`:
 
 ```
 GEMINI_API_KEY=your_api_key_here
@@ -113,7 +119,7 @@ Alfred/
 │   └── magicPixelsService.ts # Photo editing API calls
 ├── i18n/
 │   ├── LanguageContext.tsx
-│   └── translations.ts     # EN / IT strings
+│   └── translations.ts     # EN / IT / ES strings
 ├── types.ts
 ├── App.tsx
 └── index.tsx

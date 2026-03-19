@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-export type Language = 'en' | 'it';
+export type Language = 'en' | 'it' | 'es';
 
 export interface Translations {
   // Header
@@ -106,6 +106,7 @@ export interface Translations {
   outputLangAuto: string;
   outputLangEn: string;
   outputLangIt: string;
+  outputLangEs: string;
 
   // API Key Modal
   apiKeyModalTitle: string;
@@ -293,6 +294,7 @@ export const translations: Record<Language, Translations> = {
     outputLangAuto: 'Auto',
     outputLangEn: 'English',
     outputLangIt: 'Italian',
+    outputLangEs: 'Spanish',
 
     // API Key Modal
     apiKeyModalTitle: 'Gemini API Key',
@@ -479,6 +481,7 @@ export const translations: Record<Language, Translations> = {
     outputLangAuto: 'Auto',
     outputLangEn: 'Inglese',
     outputLangIt: 'Italiano',
+    outputLangEs: 'Spagnolo',
 
     // API Key Modal
     apiKeyModalTitle: 'Chiave API Gemini',
@@ -556,5 +559,192 @@ export const translations: Record<Language, Translations> = {
     mpFeatherSizeLabel: 'Grandezza sfumatura',
     mpFeatherSizePx: 'px',
     mpApplyFeather: 'Applica Sfumatura',
+  },
+
+  es: {
+    // Header
+    appTitle: 'Alfred',
+    apiKey: 'Clave API',
+    switchToLight: 'Cambiar a Tema Claro',
+    switchToDark: 'Cambiar a Tema Oscuro',
+    language: 'Idioma',
+
+    // Prompt Input
+    prompt: 'Prompt',
+    promptPlaceholder: 'Describe lo que quieres crear...',
+    analyzePrompt: 'Analizar Prompt',
+    generate: 'Generar',
+    regenerate: 'Regenerar',
+    image: 'Imagen',
+    story: 'Historia',
+    video: 'Video',
+    attachImage: 'Adjuntar una imagen',
+    attachDocument: 'Adjuntar un documento',
+    imageAttached: 'Imagen Adjunta',
+    documentAttached: 'Documento Adjunto',
+    documentsAttached: (count: number) => `${count} Documento${count !== 1 ? 's' : ''} Adjunto${count !== 1 ? 's' : ''}`,
+    remove: 'Eliminar',
+    modeDisabledWhileProcessing: 'Selección de modo deshabilitada durante el procesamiento',
+    inputDisabledWhileProcessing: 'Entrada deshabilitada durante el procesamiento. Por favor espera.',
+    enterPromptFirst: 'Por favor ingresa un prompt primero',
+    waitForCurrentOp: 'Por favor espera a que finalice la operación actual',
+
+    // Prompt Tips
+    promptTipsTitle: 'Consejos para un gran prompt',
+    imageTip: 'Describe la escena, estilo, iluminación, colores y ambiente. Sé específico sobre la composición y el ángulo de cámara.',
+    storyTip: 'Describe los personajes, el escenario, el conflicto y el tono. Menciona el género y la perspectiva narrativa.',
+    videoTip: 'Describe la acción, el movimiento de cámara, el ritmo y la atmósfera. Especifica la sensación de duración y las transiciones.',
+    promptTip: 'Describe tu idea de forma aproximada. Alfred la analizará y creará un prompt perfecto y detallado que puedes usar en cualquier lugar.',
+
+    // Tool Tabs
+    clarifications: 'Aclaraciones',
+    beliefGraph: 'Grafo de Análisis',
+    imageAttributes: 'Atributos de Imagen',
+    storyAttributes: 'Atributos de Historia',
+    videoAttributes: 'Atributos de Video',
+    promptAttributes: 'Atributos de Prompt',
+
+    // Pending Changes
+    pendingChanges: (count: number) => `${count} cambio${count !== 1 ? 's' : ''} pendiente${count !== 1 ? 's' : ''}`,
+    updatePrompt: 'Actualizar Prompt',
+    updating: 'Actualizando...',
+    updatingPromptTitle: 'Actualizando prompt...',
+    applyAllChangesTitle: 'Aplicar todos los cambios de Aclaraciones y Grafo de Análisis',
+
+    // Clarifications
+    clarificationPlaceholder: 'Las preguntas de aclaración aparecerán aquí después de la generación.',
+    thinkingSteps: [
+      'Analizando el prompt en busca de ambigüedades...',
+      'Identificando atributos vagos...',
+      'Detectando entidades implícitas...',
+      'Evaluando incertidumbres semánticas...',
+      'Formulando preguntas de aclaración...',
+    ],
+    thinkingVisual: 'Escaneando descriptores visuales...',
+    thinkingNarrative: 'Evaluando lagunas narrativas...',
+    thinkingTemporal: 'Verificando dinámicas temporales...',
+    refreshQuestions: 'Actualizar Preguntas',
+    clickUpdateToApply: 'Haz clic en "Actualizar Prompt" para aplicar.',
+    orTypeAnswer: 'O escribe la respuesta...',
+
+    // Output Gallery
+    imageGeneration: 'Generación de Imágenes',
+    videoGeneration: 'Generación de Video',
+    creativeWriting: 'Escritura Creativa',
+    generating: 'Generando...',
+    generatingVideo: 'Generando video...',
+    writingStory: 'Escribiendo historia...',
+    generationFailed: 'Generación Fallida',
+    downloadImage: 'Descargar Imagen',
+    downloadVideo: 'Descargar Video',
+    copyToClipboard: 'Copiar al Portapapeles',
+    downloadText: 'Descargar Texto',
+    resultsOutdated: 'Resultados Desactualizados',
+    promptChanged: 'El prompt ha cambiado.',
+    imageWillAppear: 'Tus imágenes generadas aparecerán aquí.',
+    videoWillAppear: 'Tu video generado aparecerá aquí.',
+    storyWillAppear: 'Tu historia creativa aparecerá aquí.',
+    billingRequired: 'Se Requiere Cuenta de Facturación',
+    billingDescription: 'Generar videos con Veo requiere una clave API de pago de Google Cloud. Selecciona una clave para continuar.',
+    learnBilling: 'Más información sobre facturación',
+    selectApiKey: 'Seleccionar Clave API',
+
+    // Prompt Creator
+    promptCreator: 'Prompt',
+    promptGeneration: 'Creador de Prompts',
+    craftingPrompt: 'Creando el prompt perfecto...',
+    perfectPromptTitle: 'Tu Prompt Perfecto',
+    promptWillAppear: 'Tu prompt creado aparecerá aquí.',
+
+    // Status
+    connectionUnstable: (action, attempt, total) => `Conexión inestable o límite de tasa alcanzado durante ${action}. Reintentando (${attempt}/${total})...`,
+
+    // Mobile
+    editor: 'Editor',
+    preview: 'Vista Previa',
+
+    // Output language
+    outputLanguage: 'Idioma de Salida',
+    outputLangAuto: 'Auto',
+    outputLangEn: 'Inglés',
+    outputLangIt: 'Italiano',
+    outputLangEs: 'Español',
+
+    // API Key Modal
+    apiKeyModalTitle: 'Clave API de Gemini',
+    apiKeyModalDesc: 'Ingresa tu clave API de Gemini para generar contenido.',
+    cancel: 'Cancelar',
+    save: 'Guardar',
+    getApiKey: 'Obtener una clave API',
+    storedInBrowser: 'almacenada solo en tu navegador',
+
+    // Ad Localizer
+    localize: 'Localizar',
+    adLocalizer: 'Ad Localizer',
+    backToAlfred: 'Volver a Alfred',
+    alUploadYourAd: '1. Sube Tu Anuncio',
+    alClickToUpload: 'Haz clic para subir la imagen de tu anuncio',
+    alRightsDisclaimer: 'Al usar esta función, confirmas que tienes los derechos necesarios sobre el contenido que subes.',
+    alTargetMarket: '2. Mercado Objetivo (Países)',
+    alSearchCountries: 'Escribe para buscar países...',
+    alNoMatchingCountries: 'No se encontraron países',
+    alTargetLanguages: '3. Idiomas de Destino',
+    alAspectRatio: '4. Relación de Aspecto',
+    alLocalizing: 'Localizando...',
+    alLocalizeAd: 'Localizar Anuncio',
+    alLocalizedResults: (done, total) => `Resultados Localizados (${done}/${total})`,
+    alExportAll: 'Exportar Todo',
+    alReset: 'Restablecer',
+    alReadyToScale: 'Listo para Escalar',
+    alReadyDesc: 'Sube tu anuncio, selecciona los mercados o idiomas de destino, luego haz clic en Localizar para generar versiones localizadas al instante.',
+    alNoImageReturned: 'No se devolvió ninguna imagen',
+    alFailedForMarket: (market) => `Error al generar para ${market}`,
+
+    // Magic Pixels
+    magicPixels: 'Magic Pixels',
+    editInMagicPixels: 'Editar en Magic Pixels',
+    mpSubtitle: 'Edición de fotos con IA, simplificada.',
+    mpDropZone: 'Suelta tu imagen aquí',
+    mpDropZoneHint: 'o haz clic para elegir un archivo — PNG, JPG, WEBP',
+    mpChooseFile: 'Elegir imagen',
+    mpCapRetouchTitle: 'Retoque Preciso',
+    mpCapRetouchDesc: 'Haz clic en cualquier punto para aplicar ediciones específicas',
+    mpCapFilterTitle: 'Filtros Creativos',
+    mpCapFilterDesc: 'Transforma el ambiente y el estilo al instante',
+    mpCapAdjustTitle: 'Ajustes Pro',
+    mpCapAdjustDesc: 'Iluminación, desenfoque, tono y más',
+    mpTabRetouch: 'Retoque',
+    mpTabAdjust: 'Ajustar',
+    mpTabFilter: 'Filtro',
+    mpTabCrop: 'Recortar',
+    mpRetouchInstruction: 'Haz clic en un punto de la imagen para seleccionarlo, luego describe qué cambiar.',
+    mpRetouchPointSelected: 'Punto seleccionado en {x}% × {y}%. Describe tu cambio a continuación.',
+    mpRetouchPlaceholder: 'ej. Elimina la imperfección, cambia la camisa a rojo…',
+    mpApplyRetouch: 'Aplicar Retoque',
+    mpCustomLabel: 'O describe un cambio personalizado',
+    mpCustomAdjustPlaceholder: 'ej. Añade efecto de lluvia…',
+    mpCustomFilterPlaceholder: 'ej. Apariencia de película vintage…',
+    mpAdjBlurBg: 'Desenfocar Fondo',
+    mpAdjEnhance: 'Mejorar Detalles',
+    mpAdjWarm: 'Iluminación Cálida',
+    mpAdjStudio: 'Luz de Estudio',
+    mpAdjRemoveBg: 'Eliminar Fondo',
+    mpFilterSynthwave: 'Synthwave',
+    mpFilterAnime: 'Anime',
+    mpFilterLomo: 'Lomo',
+    mpFilterGlitch: 'Glitch',
+    mpCropAspectLabel: 'Relación de aspecto',
+    mpCropFree: 'Libre',
+    mpCropInstruction: 'Arrastra sobre la imagen para seleccionar el área de recorte, luego haz clic en Aplicar.',
+    mpApplyCrop: 'Aplicar Recorte',
+    mpCropClear: 'Borrar selección',
+    mpProcessing: 'Procesando…',
+    mpEditFailed: 'Edición fallida. Por favor intenta de nuevo.',
+    mpUndo: 'Deshacer',
+    mpRedo: 'Rehacer',
+    mpAdjFeatherEdges: 'Difuminar Bordes',
+    mpFeatherSizeLabel: 'Tamaño de difuminado',
+    mpFeatherSizePx: 'px',
+    mpApplyFeather: 'Aplicar Difuminado',
   },
 };
