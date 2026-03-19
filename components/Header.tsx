@@ -172,20 +172,32 @@ const Header: React.FC<HeaderProps> = ({ isDarkMode, toggleDarkMode, onSelectKey
               <div className="px-3 pt-3 pb-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{t.outputLanguage}</span>
               </div>
-              <div className="px-2 pb-3 flex gap-1 flex-wrap">
-                {(['auto', 'en', 'it', 'es'] as const).map(lang => (
-                  <button
-                    key={lang}
-                    onClick={() => { setOutputLanguage(lang); }}
-                    className={`flex-1 text-xs py-1.5 px-2 rounded-lg font-medium transition-colors ${
-                      outputLanguage === lang
-                        ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                        : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    }`}
-                  >
-                    {lang === 'auto' ? t.outputLangAuto : lang === 'en' ? t.outputLangEn : lang === 'it' ? t.outputLangIt : t.outputLangEs}
-                  </button>
-                ))}
+              <div className="px-2 pb-3 flex flex-col gap-1">
+                <button
+                  onClick={() => { setOutputLanguage('auto'); }}
+                  className={`w-full text-xs py-1.5 px-2 rounded-lg font-medium transition-colors ${
+                    outputLanguage === 'auto'
+                      ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                      : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                  }`}
+                >
+                  {t.outputLangAuto}
+                </button>
+                <div className="flex gap-1">
+                  {(['en', 'it', 'es'] as const).map(lang => (
+                    <button
+                      key={lang}
+                      onClick={() => { setOutputLanguage(lang); }}
+                      className={`flex-1 text-xs py-1.5 px-2 rounded-lg font-medium transition-colors ${
+                        outputLanguage === lang
+                          ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                          : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                      }`}
+                    >
+                      {lang === 'en' ? t.outputLangEn : lang === 'it' ? t.outputLangIt : t.outputLangEs}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
